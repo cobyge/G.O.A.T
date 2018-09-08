@@ -14,6 +14,8 @@ const CLIENT_ID = process.env.CLIENT_ID
 const CLIENT_SECRET = process.env.CLIENT_SECRET
 const token = process.env.TOKEN
 
+
+//List of games, as a tag.  Here I should have code to verify that the tag I get into handleTags is a valid tag, based off of the forums.
 const TAGS = [
   'Blades',
   'Regulators (FO1)',
@@ -69,10 +71,13 @@ const TAGS = [
   'NoAge'
 ]
 
+
 client.on('ready', () => {
   console.log(`> Bot iniciado`)
 })
 
+
+//On first log-in *to this website*, this gets called, and changes the default role.  *TODO*: Change hardcoded roles into a CONST up above
 function addMembership(member) {
   const GUILD = client.guilds.find('id', SERVER_ID)
   member.addRole(GUILD.roles.find('name', 'Vault Dweller').id).then(() => {
@@ -81,6 +86,8 @@ function addMembership(member) {
   })
 }
 
+
+//Useless Function
 function toggleRole(member, tag) {
   const GUILD = client.guilds.find('id', SERVER_ID)
   if (member.roles.find('name', tag)) {
@@ -103,6 +110,8 @@ function toggleRole(member, tag) {
   }
 }
 
+
+//Handles changing Tags, most of it is useless to us, last is important
 function handleTags(member, tag) {
   const GUILD = client.guilds.find('id', SERVER_ID)
   if (TAGS.includes(tag)) {
@@ -123,6 +132,7 @@ function handleTags(member, tag) {
       }
       return
     }
+	//Try to sort out this code
     if (tag === '+18' || tag === '-18') {
       if (member.roles.find('name', '-18')) {
         member.removeRole(GUILD.roles.find('name', '-18').id).then(() => {
@@ -137,6 +147,8 @@ function handleTags(member, tag) {
       }
       return
     }
+	
+	//Get rid of all this, it's useless
     if (member.roles.find('name', 'Sem Especificação')) {
       member.removeRole(GUILD.roles.find('name', 'Sem Especificação').id)
     }
@@ -247,6 +259,7 @@ nextApp.prepare().then(() => {
       })
   })
 
+//Has Block of useless code regarding Brotherhood of Steel
   app.get('/userTags/:userid', (req, res) => {
     if (req.params.userid) {
       axios({
