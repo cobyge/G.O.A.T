@@ -1,8 +1,10 @@
 import { Image, Button } from 'semantic-ui-react'
 
-class Regras extends React.Component {
+
+
+class Rules extends React.Component {
   componentDidMount() {
-    document.title = 'Vault 130 - Regras'
+    document.title = 'Rules'
   }
 
   render() {
@@ -13,12 +15,12 @@ class Regras extends React.Component {
         <div>
           <center>
             <Image
-              src="static/introducao.png"
+              src="static/intro.png"
               size="large"
               style={{ clear: 'both' }}
             />
           </center>
-          <Image src="static/musico.png" size="small" floated="left" />
+          <Image src="static/music.png" size="small" floated="left" />
 
           <br />
           <p>
@@ -39,7 +41,7 @@ class Regras extends React.Component {
         </div>
         <div style={{ clear: 'both', paddingBottom: '20px' }}>
           <center>
-            <Image src="static/regras.png" size="large" />
+            <Image src="static/rules.png" size="large" />
             <h1>
               "Age como se a máxima de tua ação devesse tornar-se, através da
               tua vontade, uma lei universal." <small> – Immanuel Kant</small>
@@ -97,4 +99,4 @@ class Regras extends React.Component {
   }
 }
 
-export default Regras
+export default Rules

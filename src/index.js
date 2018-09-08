@@ -12,7 +12,7 @@ const client = new Discord.Client()
 const SERVER_ID = process.env.SERVER_ID
 const CLIENT_ID = process.env.CLIENT_ID
 const CLIENT_SECRET = process.env.CLIENT_SECRET
-const token = process.env.TOKEN
+const token = process.env.CLIENT_TOKEN
 
 
 //List of games, as a tag.  Here I should have code to verify that the tag I get into handleTags is a valid tag, based off of the forums.
@@ -59,7 +59,7 @@ const TAGS = [
   'Children of the Atom',
   'Raider Gangs',
   'Midwest Chapter',
-  'Sem Especificação',
+  'Not Specified',
   '+18',
   '-18',
   'Brotherhood of Steel (Mojave Chapter)',
@@ -73,7 +73,7 @@ const TAGS = [
 
 
 client.on('ready', () => {
-  console.log(`> Bot iniciado`)
+  console.log(`> Bot Ready`)
 })
 
 
@@ -116,12 +116,12 @@ function handleTags(member, tag) {
   const GUILD = client.guilds.find('id', SERVER_ID)
   if (TAGS.includes(tag)) {
     let userTags = member.roles.filterArray(i => TAGS.includes(i.name))
-    if (tag === 'Sem Especificação') {
+    if (tag === 'Not Specified') {
       for (let tag of userTags) {
         if (tag.name === '+18' || tag.name === '-18') continue
         member.removeRole(GUILD.roles.find('name', tag.name).id)
       }
-      member.addRole(GUILD.roles.find('name', 'Sem Especificação').id)
+      member.addRole(GUILD.roles.find('name', 'Not Specified').id)
       return
     }
     if (tag === 'NoAge') {
@@ -149,8 +149,8 @@ function handleTags(member, tag) {
     }
 	
 	//Get rid of all this, it's useless
-    if (member.roles.find('name', 'Sem Especificação')) {
-      member.removeRole(GUILD.roles.find('name', 'Sem Especificação').id)
+    if (member.roles.find('name', 'Not Specified')) {
+      member.removeRole(GUILD.roles.find('name', 'Not Specified').id)
     }
     if (tag === 'Brotherhood of Steel (First Chapter)') {
       toggleRole(member, 'First Chapter')
@@ -207,8 +207,8 @@ nextApp.prepare().then(() => {
         client_secret: CLIENT_SECRET,
         grant_type: 'authorization_code',
         code: req.query.code || req.body.code || req.params.code,
-        redirect_uri: process.env.NOW_URL
-          ? 'https://vault130.now.sh/callback'
+        redirect_uri: process.env.SITE_URL
+          ? SITE_URL + '/callback'
           : 'http://localhost:3000/callback'
       }),
       headers: { 'content-type': 'application/x-www-form-urlencoded' }
@@ -217,8 +217,8 @@ nextApp.prepare().then(() => {
         const { access_token, refresh_token } = response.data
         res.redirect(
           301,
-          process.env.NOW_URL
-            ? 'https://vault130.now.sh/goat?code=' +
+          process.env.SITE_URL
+            ?  + '/goat?code=' +
               access_token +
               '&refresh=' +
               refresh_token
@@ -243,8 +243,8 @@ nextApp.prepare().then(() => {
         client_secret: CLIENT_SECRET,
         grant_type: 'refresh_token',
         refresh_token: req.body.refresh_token,
-        redirect_uri: process.env.NOW_URL
-          ? 'https://vault130.now.sh' + '/callback'
+        redirect_uri: process.env.SITE_URL
+          ? SITE_URL + '/callback'
           : 'http://localhost:3000/callback'
       }),
       headers: { 'content-type': 'application/x-www-form-urlencoded' }
@@ -259,7 +259,7 @@ nextApp.prepare().then(() => {
       })
   })
 
-//Has Block of useless code regarding Brotherhood of Steel
+//Has Block of useless code regarding Brotherhood of Steel, selecting all BoS versions applicable.  Only part of this is useful.
   app.get('/userTags/:userid', (req, res) => {
     if (req.params.userid) {
       axios({

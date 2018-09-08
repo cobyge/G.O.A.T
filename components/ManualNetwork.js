@@ -2,7 +2,7 @@ import { Image, Button } from 'semantic-ui-react'
 
 class ManualNetwork extends React.Component {
   componentDidMount() {
-    document.title = 'Vault 130 - Network'
+    document.title = 'Server Guide'
   }
   render() {
     const { next } = this.props
@@ -146,7 +146,7 @@ class ManualNetwork extends React.Component {
           size="medium"
           fluid
         >
-          Prosseguir para o GOAT
+          Continue to GOAT
         </Button>
       </div>
     )

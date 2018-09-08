@@ -23,7 +23,7 @@ export default class Profile extends React.Component {
               style={{ marginTop: '10px' }}
               onClick={() => this.props.onLogout()}
             >
-              <Button.Content visible>Sair</Button.Content>
+              <Button.Content visible>Logout</Button.Content>
               <Button.Content hidden>
                 <Icon name="right arrow" />
               </Button.Content>

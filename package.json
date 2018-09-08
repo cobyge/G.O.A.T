@@ -7,8 +7,7 @@
     "dev": "backpack dev",
     "build": "next build && backpack build",
     "start": "NODE_ENV=production node build/main.js",
-    "deploy":
-      "now scale vault130.now.sh 0 && ping 127.0.0.1 -n 11 > nul && now --public && now alias rm vault130.now.sh --yes && now alias && now scale vault130.now.sh sfo1 1"
+    "deploy": "now scale vault130.now.sh 0 && ping 127.0.0.1 -n 11 > nul && now --public && now alias rm vault130.now.sh --yes && now alias && now scale vault130.now.sh sfo1 1"
   },
   "keywords": [],
   "author": "Henrick Mello",
@@ -24,6 +23,7 @@
     "qs": "^6.5.1",
     "react": "^16.2.0",
     "react-dom": "^16.2.0",
-    "semantic-ui-react": "^0.79.1"
+    "semantic-ui-react": "^0.79.1",
+    "yarn-upgrade-all": "^0.3.0"
   }
 }

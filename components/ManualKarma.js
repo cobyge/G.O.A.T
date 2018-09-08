@@ -2,7 +2,7 @@ import { Image, Button } from 'semantic-ui-react'
 
 class ManualKarma extends React.Component {
   componentDidMount() {
-    document.title = 'Vault 130 - Karma'
+    document.title = 'Karma'
   }
 
   render() {
@@ -53,7 +53,7 @@ class ManualKarma extends React.Component {
           size="medium"
           fluid
         >
-          Próximo
+          Next
         </Button>
       </div>
     )

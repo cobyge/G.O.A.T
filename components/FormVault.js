@@ -11,8 +11,10 @@ import {
   Checkbox
 } from 'semantic-ui-react'
 import axios from 'axios'
-import { getToken, checkRole } from '../utils/auth'
+import { getToken } from '../utils/auth'
 
+
+//Tags for all the games
 const TAGS = [
   'Blades',
   'Regulators (FO1)',
@@ -56,8 +58,8 @@ const TAGS = [
   'Children of the Atom',
   'Raider Gangs',
   'Midwest Chapter',
-  'Sem Especificação',
-  'Sem Especificação',
+  'Not Specified',
+  'Not Specified',
   '+18',
   '-18',
   'Brotherhood of Steel (First Chapter)',
@@ -68,6 +70,7 @@ const TAGS = [
   'Brotherhood of Steel (Outcasts)'
 ]
 
+//Here tags are sorted into their games (Probably useless unless we have game categories)
 const TagCategories = {
   'Fallout 1': [
     'Blades',
@@ -132,6 +135,7 @@ export default class TagsForm extends React.Component {
       loading: true
     }
   }
+//Sets the 'tags' var to contain all the tags that are also in TAGS.  Gets this list from server.
   componentDidMount() {
     axios({
       method: 'GET',
@@ -145,11 +149,12 @@ export default class TagsForm extends React.Component {
   handleClose() {
     location.reload()
   }
+//When boxes are clicked on, if the box was not 'Not Specified', then unchecks 'Not Specified', and checks the other boxes
   handleChange = (answ, tag) => {
     if (!this.state.tags.includes(tag.value))
       this.setState({
         tags: [
-          ...this.state.tags.filter(i => i !== 'Sem Especificação'),
+          ...this.state.tags.filter(i => i !== 'Not Specified'),
           tag.value
         ]
       })
@@ -162,21 +167,22 @@ export default class TagsForm extends React.Component {
       data: { tag: tag.value, token: getToken() }
     })
   }
-
-  handleSemEspec() {
+//Handles the "Not Specified" button
+  handleNotSpecified() {
     this.setState({
       tags: [
         ...this.state.tags.filter(i => i === '+18' || i === '-18'),
-        'Sem Especificação'
+        'Not Specified'
       ]
     })
 
     axios({
       method: 'POST',
       url: `/handleTags`,
-      data: { tag: 'Sem Especificação', token: getToken() }
+      data: { tag: 'Not Specified', token: getToken() }
     })
   }
+//Handles changing the age
   handleAge(e, { value }) {
     if (value === '+18') {
       this.setState({
@@ -242,10 +248,10 @@ export default class TagsForm extends React.Component {
             <div style={{ textAlign: 'center' }}>
               <Form.Field
                 control={Checkbox}
-                label="Sem Especificação"
-                value="Sem Especificação"
-                checked={this.state.tags.includes('Sem Especificação')}
-                onChange={this.handleSemEspec.bind(this)}
+                label="Not Specified"
+                value="Not Specified"
+                checked={this.state.tags.includes('Not Specified')}
+                onChange={this.handleNotSpecified.bind(this)}
               />
             </div>
           </Segment>

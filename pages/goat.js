@@ -10,12 +10,12 @@ import {
 
 import Profile from '../components/Profile'
 import Form from '../components/FormVault'
-
-const SITE_URL = process.env.NOW_URL
+const SITE_URL = process.env.SITE_URL
   ? process.env.SITE_URL
   : 'http://localhost:3000'
 const CLIENT_ID = process.env.CLIENT_ID
 
+//Get token and code for user credentials
 function getUrlParams(search) {
   let hashes = search.slice(search.indexOf('?') + 1).split('&')
   return hashes.reduce((params, hash) => {
@@ -33,9 +33,10 @@ export default class Index extends React.Component {
       loading: true
     }
   }
-
+  
+//Check if logged in, if logged in, loadInfo, otherwise don't
   componentDidMount() {
-    document.title = 'Vault 130 - G.O.A.T.: Sistema de Tags Automatizadas'
+    document.title = 'Auto-System'
     const { code, refresh } = getUrlParams(window.location.search)
     const token = getToken()
     if (code && refresh) {
@@ -45,7 +46,7 @@ export default class Index extends React.Component {
       this.loadInfo()
       history.replaceState(
         {},
-        'Vault 130 - G.O.A.T.: Sistema de Tags Automatizadas - Tags',
+        'Auto-System-Tags',
         '/'
       )
     } else if (token) {
@@ -57,12 +58,15 @@ export default class Index extends React.Component {
       this.setState({ loading: false })
     }
   }
+//Loads user-info, if user is a member, then continue, else don't
+//People with no icon set get a no-icon symbol, maybe fix?
   loadInfo() {
     getInfo()
       .then(({ data }) => {
         this.setState({ user: data })
-        document.title =
-          'Vault 130 - G.O.A.T.: Sistema de Tags Automatizadas - ' +
+
+		document.title =
+          'Auto-System - ' +
           data.username +
           '#' +
           data.discriminator
@@ -81,14 +85,14 @@ export default class Index extends React.Component {
     logout()
     this.setState({ loggedin: false })
     document.title =
-      'Vault 130 - G.O.A.T.: Sistema de Tags Automatizadas - Tags'
+      'Auto-System - Tags'
   }
   render() {
     if (this.state.loading) {
       return (
         <Dimmer active>
           <Loader inverted size="big">
-            Carregando
+            Loading
           </Loader>
         </Dimmer>
       )
@@ -110,9 +114,9 @@ export default class Index extends React.Component {
               {(this.state.member && (
                 <Form
                   userid={this.state.user.id}
-                  pendente={this.state.isPending}
+                  pending={this.state.isPending}
                 />
-              )) || <h1>Você não é membro do servidor</h1>}
+              )) || <h1>You are not a member of this wiki</h1>}
             </React.Fragment>
           )) || (
           <div>
@@ -147,7 +151,7 @@ export default class Index extends React.Component {
                   inverted
                   size="massive"
                 >
-                  Entrar com o Discord
+                  Sign in with Discord
                 </Button>
               </a>
             </center>

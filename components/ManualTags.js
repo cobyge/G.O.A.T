@@ -2,7 +2,7 @@ import { Image, Button } from 'semantic-ui-react'
 
 class ManualTags extends React.Component {
   componentDidMount() {
-    document.title = 'Vault 130 - Tags'
+    document.title = 'Tags'
   }
 
   render() {
@@ -51,7 +51,7 @@ class ManualTags extends React.Component {
         reconhecimento de comportamento.<br />
         <span>Tags de facções</span>: Usuários que apoiam determinadas facções e
         defendem as suas missões/ideias.<br />
-        <span>Sem Especificação:</span> Usuários aos quais não apoiam as ideias
+        <span>Not Specified:</span> Usuários aos quais não apoiam as ideias
         de nenhuma facção em particular.
         <br />
         <br />
@@ -63,7 +63,7 @@ class ManualTags extends React.Component {
           size="medium"
           fluid
         >
-          Próximo
+          Next
         </Button>
       </div>
     )
