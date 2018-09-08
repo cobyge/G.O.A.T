@@ -10,12 +10,14 @@ import {
 
 import Profile from '../components/Profile'
 import Form from '../components/FormVault'
+
+//Checks to see if there is a SITE_URL env.  If not, it uses the default localhost
 const SITE_URL = process.env.SITE_URL
   ? process.env.SITE_URL
   : 'http://localhost:3000'
 const CLIENT_ID = process.env.CLIENT_ID
 
-//Get token and code for user credentials
+//Gets token and code for user credentials
 function getUrlParams(search) {
   let hashes = search.slice(search.indexOf('?') + 1).split('&')
   return hashes.reduce((params, hash) => {
@@ -161,7 +163,7 @@ export default class Index extends React.Component {
           {`
             @font-face {
               font-family: pipboy;
-              src: url(./static/monofonto.ttf);
+              src: url(./static/monofont.ttf);
             }
             ::selection,
             ::-moz-selection {

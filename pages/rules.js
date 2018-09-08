@@ -45,7 +45,7 @@ class index2 extends Component {
         <style jsx global>{`
           @font-face {
             font-family: pipboy;
-            src: url(./static/monofonto.ttf);
+            src: url(./static/monofont.ttf);
           }
           ::selection,
           ::-moz-selection {

@@ -280,7 +280,7 @@ export default class TagsForm extends React.Component {
               />
               <Form.Field
                 control={Radio}
-                label="Prefiro não responder"
+                label="Prefer not to answer"
                 value="NoAge"
                 name="idade"
                 checked={
