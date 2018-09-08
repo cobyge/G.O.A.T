@@ -25,12 +25,12 @@ Make a file called .env and put it in the project root. The format should be as 
 	
 Once you have that set up, run:
 
-yarn
+	yarn
 
 Yarn will install dependencies
 Then run:
 
-yarn dev
+	yarn dev
 
 And you'll be running in development mode.
 
