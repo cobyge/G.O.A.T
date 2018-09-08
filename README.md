@@ -41,6 +41,7 @@ Should be able to easily change font from /static/monofont.ttf
 Font rules are contained in /pages/goat.js, and in /pages/rules.js
 
 Public TODO:
+
     TRANSLATE INTO ENGLISH:
         /pages/goat.js
         /components/ManualKarma.js   //Only if we are going to use it (unlikely)
