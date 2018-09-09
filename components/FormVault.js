@@ -13,9 +13,11 @@ import {
 import axios from 'axios'
 import { getToken } from '../utils/auth'
 
-
+var i = 0
+var j = 0
+var TAGS = []
 //Tags for all the games
-const TAGS = [
+/*const TAGS = [
   'Blades',
   'Regulators (FO1)',
   'Unity',
@@ -24,6 +26,7 @@ const TAGS = [
   'Raider Gangs',
   'Enclave',
   'Shi',
+  'Apple',
   'Unity',
   'Vault City',
   'Tanker Vagrants',
@@ -68,20 +71,26 @@ const TAGS = [
   "Brotherhood of Steel (Maxson's Pride)",
   'Brotherhood of Steel (Midwest Chapter)',
   'Brotherhood of Steel (Outcasts)'
-]
+]*/
 
-//Here tags are sorted into their games (Probably useless unless we have game categories)
+
+
+//Add code to make sure there are no duplicates (otherwise the list will duplicate itself every visit to this page
+axios({
+  method: 'GET',
+  url: `/serverChannels`}).then(function(response){
+	  TAGS.push(response.data)
+	  console.log(TAGS)
+	  })
+
+  
+  
+//Here tags are sorted into their games (Probably useless unless we have game categories), and put into the page
 const TagCategories = {
-  'Fallout 1': [
-    'Blades',
-    'Regulators (FO1)',
-    'Unity',
-    'Brotherhood of Steel (First Chapter)',
-    'Followers of the Apocalypse',
-    'Raider Gangs'
-  ],
-  'Fallout 2': [
+
+  'A': [
     'Enclave',
+	'Apple',
     'Shi',
     'Vault City',
     'Tanker Vagrants',
@@ -107,7 +116,6 @@ const TagCategories = {
     'Kings',
     'Great Khans',
     'Boomers',
-    'Brotherhood of Steel (Mojave Chapter)',
     'Raider Gangs',
     'Sorrows',
     'Twisted Hairs'
@@ -135,6 +143,7 @@ export default class TagsForm extends React.Component {
       loading: true
     }
   }
+
 //Sets the 'tags' var to contain all the tags that are also in TAGS.  Gets this list from server.
   componentDidMount() {
     axios({

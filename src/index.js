@@ -4,8 +4,7 @@ import Discord from 'discord.js'
 import express from 'express'
 import bodyParser from 'body-parser'
 import next from 'next'
-import dotenv from 'dotenv'
-dotenv.config()
+require('dotenv').config()
 
 const client = new Discord.Client()
 
@@ -13,10 +12,12 @@ const SERVER_ID = process.env.SERVER_ID
 const CLIENT_ID = process.env.CLIENT_ID
 const CLIENT_SECRET = process.env.CLIENT_SECRET
 const token = process.env.CLIENT_TOKEN
-
+const DEFAULT_SERVER_ROLE = process.env.DEFAULT_SERVER_ROLE
+const CHANNEL_CATEGORY = process.env.CHANNEL_CATEGORY
+const EXTRA_TAGS = process.env.EXTRA_TAGS
 
 //List of games, as a tag.  Here I should have code to verify that the tag I get into handleTags is a valid tag, based off of the forums.
-const TAGS = [
+/*const TAGS = [
   'Blades',
   'Regulators (FO1)',
   'Unity',
@@ -69,7 +70,7 @@ const TAGS = [
   'Brotherhood of Steel (Midwest Chapter)',
   'Brotherhood of Steel (Outcasts)',
   'NoAge'
-]
+]*/
 
 
 client.on('ready', () => {
@@ -80,14 +81,15 @@ client.on('ready', () => {
 //On first log-in *to this website*, this gets called, and changes the default role.  *TODO*: Change hardcoded roles into a CONST up above
 function addMembership(member) {
   const GUILD = client.guilds.find('id', SERVER_ID)
+  //console.log(GUILD)
   member.addRole(GUILD.roles.find('name', 'Vault Dweller').id).then(() => {
-    member.removeRole(GUILD.roles.find('name', 'Wastelander').id)
+    member.removeRole(GUILD.roles.find('name', DEFAULT_SERVER_ROLE).id)
     member.addRole(GUILD.roles.find('name', 'Vault Renegade [0]').id)
   })
 }
 
 
-//Useless Function
+//Useless Function that handles BoS
 function toggleRole(member, tag) {
   const GUILD = client.guilds.find('id', SERVER_ID)
   if (member.roles.find('name', tag)) {
@@ -132,7 +134,7 @@ function handleTags(member, tag) {
       }
       return
     }
-	//Try to sort out this code
+    //Try to sort out this code
     if (tag === '+18' || tag === '-18') {
       if (member.roles.find('name', '-18')) {
         member.removeRole(GUILD.roles.find('name', '-18').id).then(() => {
@@ -147,8 +149,8 @@ function handleTags(member, tag) {
       }
       return
     }
-	
-	//Get rid of all this, it's useless
+    
+    //Get rid of all this, it's useless
     if (member.roles.find('name', 'Not Specified')) {
       member.removeRole(GUILD.roles.find('name', 'Not Specified').id)
     }
@@ -182,7 +184,7 @@ function handleTags(member, tag) {
       member.addRole(GUILD.roles.find('name', tag).id)
     }
   } else {
-    console.log(member.name, '#', member.discriminator, '- Tag não reconhecida')
+    console.log(member.name, '#', member.discriminator, '- Tag not recognized')
   }
 }
 
@@ -191,6 +193,9 @@ client.login(token)
 const dev = process.env.NODE_ENV !== 'production'
 const nextApp = next({ dev })
 const handle = nextApp.getRequestHandler()
+var i = 0
+var j = 0
+var TAGS = EXTRA_TAGS.split(',')
 
 nextApp.prepare().then(() => {
   const app = express()
@@ -342,6 +347,34 @@ nextApp.prepare().then(() => {
       .catch(err => res.send('error'))
   })
 
+  
+//MyCode to get all channels from specific category
+
+    app.get('/serverChannels', (req, res) => {
+    axios({
+      method: 'GET',
+      url: `https://discordapp.com/api/v6/guilds/${SERVER_ID}/channels
+	`,
+      headers: {
+        Authorization: 'Bot ' + token
+      }
+    })
+		.then(function(data){
+			for (i in data.data){
+				if (data.data[i]['name'] == CHANNEL_CATEGORY  && data.data[i]['type'] == 4){
+					for (j in data.data){
+						if (data.data[i]['id'] == data.data[j]['parent_id']){
+							TAGS.push(data.data[j]['name'])
+						}
+					}
+				}
+			}
+		res.send(TAGS)
+		console.log(TAGS)
+		})
+		.catch(err => res.send('error'))
+  })
+  
   app.post('/handleTags', (req, res) => {
     if (req.body.token) {
       axios({
@@ -350,11 +383,13 @@ nextApp.prepare().then(() => {
         headers: {
           Authorization: 'Bearer ' + req.body.token
         }
+        //Next bit of code checks to see if the user is a member of group DEFAULT_SERVER_ROLE, and if it is, calls addMembership
       }).then(({ data }) => {
         const member = client.guilds
           .find('id', SERVER_ID)
           .members.find('id', data.id)
-        if (member.roles.find('name', 'Wastelander')) addMembership(member)
+        if (member.roles.find('name', DEFAULT_SERVER_ROLE)) addMembership(member)
+        addMembership(member)
         handleTags(member, req.body.tag)
         res.send(member)
       })

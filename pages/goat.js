@@ -1,5 +1,6 @@
 import React from 'react'
 import { Image, Button, Loader, Dimmer, Container } from 'semantic-ui-react'
+import axios from 'axios'
 import {
   refreshToken,
   getToken,
@@ -25,7 +26,8 @@ function getUrlParams(search) {
     return Object.assign(params, { [key]: decodeURIComponent(val) })
   }, {})
 }
-
+	
+	
 export default class Index extends React.Component {
   constructor() {
     super()
@@ -36,7 +38,7 @@ export default class Index extends React.Component {
     }
   }
   
-//Check if logged in, if logged in, loadInfo, otherwise don't
+//Check if logged in, if logged in, loadInfo, otherwise get info then loadInfo
   componentDidMount() {
     document.title = 'Auto-System'
     const { code, refresh } = getUrlParams(window.location.search)
@@ -116,7 +118,7 @@ export default class Index extends React.Component {
               {(this.state.member && (
                 <Form
                   userid={this.state.user.id}
-                  pending={this.state.isPending}
+                  //pending={this.state.isPending}  Useless???
                 />
               )) || <h1>You are not a member of this wiki</h1>}
             </React.Fragment>

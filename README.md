@@ -22,6 +22,16 @@ Make a file called .env and put it in the project root. The format should be as 
     #URL of callback site for DiscordAPI, leave empty for default localhost:3000
     SITE_URL=
 
+	#Default server role that users are placed into by Discord (Changes per server).  The code currently changes this value to "Vault Dweller", need to add another env to customize roles.
+	DEFAULT_SERVER_ROLE=Wastelander
+
+	#EXCLUDE_SERVER_ROLE=  Insert comma seperated list of roles that are not game related (Admin, user, different ranks, etc.)
+
+	#Name of category containing all games.  Category names are capitalized in Discord regardless of Category name, so I reccommend naming you channel in all caps
+	CHANNEL_CATEGORY=CATEGORY123
+
+	#Extra Tags included such as age, etc.  Seperated by comma without spaces
+	EXTRA_TAGS=
     
 Once you have that set up, run:
 
@@ -54,3 +64,5 @@ Public TODO:
     Decide if Karma page is something we want in our server.
     
     Change the way this server currently adds new members:  It currently has it's roles hardcoded into the body, I want to make some of them come from the server (channels), and some come from env-file (Default role, and role to change to (if-any).
+	
+	Add explanation of the tagging system
