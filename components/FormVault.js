@@ -13,9 +13,6 @@ import {
 import axios from 'axios'
 import { getToken } from '../utils/auth'
 
-var i = 0
-var j = 0
-var TAGS = []
 //Tags for all the games
 /*const TAGS = [
   'Blades',
@@ -73,14 +70,15 @@ var TAGS = []
   'Brotherhood of Steel (Outcasts)'
 ]*/
 
-
-
+var TAGS = []
+var i = 0
+var j = 0
 //Add code to make sure there are no duplicates (otherwise the list will duplicate itself every visit to this page
 axios({
   method: 'GET',
   url: `/serverChannels`}).then(function(response){
-	  TAGS.push(response.data)
-	  console.log(TAGS)
+	  TAGS = []
+      TAGS.push(response.data)
 	  })
 
   

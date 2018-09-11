@@ -14,7 +14,10 @@ const CLIENT_SECRET = process.env.CLIENT_SECRET
 const token = process.env.CLIENT_TOKEN
 const DEFAULT_SERVER_ROLE = process.env.DEFAULT_SERVER_ROLE
 const CHANNEL_CATEGORY = process.env.CHANNEL_CATEGORY
-const EXTRA_TAGS = process.env.EXTRA_TAGS
+try{
+    const EXTRA_TAGS = process.env.EXTRA_TAGS.split(',')
+}
+catch(err){const EXTRA_TAGS = ''}
 
 //List of games, as a tag.  Here I should have code to verify that the tag I get into handleTags is a valid tag, based off of the forums.
 /*const TAGS = [
@@ -81,7 +84,6 @@ client.on('ready', () => {
 //On first log-in *to this website*, this gets called, and changes the default role.  *TODO*: Change hardcoded roles into a CONST up above
 function addMembership(member) {
   const GUILD = client.guilds.find('id', SERVER_ID)
-  //console.log(GUILD)
   member.addRole(GUILD.roles.find('name', 'Vault Dweller').id).then(() => {
     member.removeRole(GUILD.roles.find('name', DEFAULT_SERVER_ROLE).id)
     member.addRole(GUILD.roles.find('name', 'Vault Renegade [0]').id)
@@ -195,7 +197,6 @@ const nextApp = next({ dev })
 const handle = nextApp.getRequestHandler()
 var i = 0
 var j = 0
-var TAGS = EXTRA_TAGS.split(',')
 
 nextApp.prepare().then(() => {
   const app = express()
@@ -278,52 +279,11 @@ nextApp.prepare().then(() => {
       }).then(({ data }) => {
         let tags = []
         for (let tag of data.roles) {
-          if (
-            client.guilds.find('id', SERVER_ID).roles.find('id', tag).name ===
-            'Mojave Chapter'
-          ) {
-            tags.push('Brotherhood of Steel (Mojave Chapter)')
-            continue
-          }
-          if (
-            client.guilds.find('id', SERVER_ID).roles.find('id', tag).name ===
-            'First Chapter'
-          ) {
-            tags.push('Brotherhood of Steel (First Chapter)')
-            continue
-          }
-          if (
-            client.guilds.find('id', SERVER_ID).roles.find('id', tag).name ===
-            "Lyon's Pride"
-          ) {
-            tags.push("Brotherhood of Steel (Lyon's Pride)")
-            continue
-          }
-          if (
-            client.guilds.find('id', SERVER_ID).roles.find('id', tag).name ===
-            "Maxson's Pride"
-          ) {
-            tags.push("Brotherhood of Steel (Maxson's Pride)")
-            continue
-          }
-          if (
-            client.guilds.find('id', SERVER_ID).roles.find('id', tag).name ===
-            'Midwest Chapter'
-          ) {
-            tags.push('Brotherhood of Steel (Midwest Chapter)')
-            continue
-          }
-          if (
-            client.guilds.find('id', SERVER_ID).roles.find('id', tag).name ===
-            'Outcasts'
-          ) {
-            tags.push('Brotherhood of Steel (Outcasts)')
-            continue
-          }
           tags.push(
             client.guilds.find('id', SERVER_ID).roles.find('id', tag).name
           )
         }
+        console.log(tags)
         res.send(tags)
       })
     } else {
@@ -360,7 +320,16 @@ nextApp.prepare().then(() => {
       }
     })
 		.then(function(data){
-			for (i in data.data){
+            var TAGS = []
+            try{
+                for (i in EXTRA_TAGS){
+                    TAGS.push(EXTRA_TAGS[i])
+                }
+            }
+            catch(err){
+                TAGS = []
+            }
+            for (i in data.data){
 				if (data.data[i]['name'] == CHANNEL_CATEGORY  && data.data[i]['type'] == 4){
 					for (j in data.data){
 						if (data.data[i]['id'] == data.data[j]['parent_id']){
@@ -370,7 +339,6 @@ nextApp.prepare().then(() => {
 				}
 			}
 		res.send(TAGS)
-		console.log(TAGS)
 		})
 		.catch(err => res.send('error'))
   })

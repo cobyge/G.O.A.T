@@ -68,7 +68,6 @@ export default class Index extends React.Component {
     getInfo()
       .then(({ data }) => {
         this.setState({ user: data })
-
 		document.title =
           'Auto-System - ' +
           data.username +

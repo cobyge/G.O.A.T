@@ -61,7 +61,9 @@ Public TODO:
     
     Change code so TAGS will be a list of channels, taken from the channel when user visits webpage.
     
-    Decide if Karma page is something we want in our server.
+    Decide if Karma page is something we want in our server.(Make optional?)
+    
+    Figure out now.json file renaming.  Add to README
     
     Change the way this server currently adds new members:  It currently has it's roles hardcoded into the body, I want to make some of them come from the server (channels), and some come from env-file (Default role, and role to change to (if-any).
 	
