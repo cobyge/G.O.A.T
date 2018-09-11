@@ -24,7 +24,7 @@ export function refreshToken() {
         })
       })
       .catch(err => reject(err))
-  })
+  }).catch(err => reject(err))
 }
 
 export function getToken() {
@@ -63,5 +63,5 @@ export async function checkMembership() {
         }
       })
       .catch(err => console.log(err))
-  })
+  }).catch(err => console.log(err))
 }

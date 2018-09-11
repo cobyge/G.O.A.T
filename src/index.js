@@ -7,79 +7,16 @@ import next from 'next'
 require('dotenv').config()
 
 const client = new Discord.Client()
-
 const SERVER_ID = process.env.SERVER_ID
 const CLIENT_ID = process.env.CLIENT_ID
 const CLIENT_SECRET = process.env.CLIENT_SECRET
 const token = process.env.CLIENT_TOKEN
 const DEFAULT_SERVER_ROLE = process.env.DEFAULT_SERVER_ROLE
 const CHANNEL_CATEGORY = process.env.CHANNEL_CATEGORY
-try{
-    const EXTRA_TAGS = process.env.EXTRA_TAGS.split(',')
-}
-catch(err){const EXTRA_TAGS = ''}
-
-//List of games, as a tag.  Here I should have code to verify that the tag I get into handleTags is a valid tag, based off of the forums.
-/*const TAGS = [
-  'Blades',
-  'Regulators (FO1)',
-  'Unity',
-  'Brotherhood of Steel',
-  'Followers of the Apocalypse',
-  'Raider Gangs',
-  'Enclave',
-  'Shi',
-  'Unity',
-  'Vault City',
-  'Tanker Vagrants',
-  'Raider Gangs',
-  'Enclave',
-  "Lyon's Pride",
-  'Regulators (FO3)',
-  'Tunnel Snakes',
-  "Reilly's Rangers",
-  'Talon Company',
-  'Children of the Atom',
-  'BoS - Outcasts',
-  'Outcasts',
-  'Raider Gangs',
-  'Independent Vegas (Yes Man)',
-  'Mr. House',
-  "Caesar's Legion",
-  'New California Republic',
-  'Followers of the Apocalypse',
-  'Kings',
-  'Great Khans',
-  'Boomers',
-  'Brotherhood of Steel',
-  'Raider Gangs',
-  'Sorrows',
-  'Twisted Hairs',
-  'Railroad',
-  'Minutemen',
-  'Institute',
-  "Maxson's Pride",
-  'Atom Cats',
-  'Children of the Atom',
-  'Raider Gangs',
-  'Midwest Chapter',
-  'Not Specified',
-  '+18',
-  '-18',
-  'Brotherhood of Steel (Mojave Chapter)',
-  'Brotherhood of Steel (First Chapter)',
-  "Brotherhood of Steel (Lyon's Pride)",
-  "Brotherhood of Steel (Maxson's Pride)",
-  'Brotherhood of Steel (Midwest Chapter)',
-  'Brotherhood of Steel (Outcasts)',
-  'NoAge'
-]*/
-
 
 client.on('ready', () => {
   console.log(`> Bot Ready`)
 })
-
 
 //On first log-in *to this website*, this gets called, and changes the default role.  *TODO*: Change hardcoded roles into a CONST up above
 function addMembership(member) {
@@ -90,44 +27,23 @@ function addMembership(member) {
   })
 }
 
-
-//Useless Function that handles BoS
-function toggleRole(member, tag) {
-  const GUILD = client.guilds.find('id', SERVER_ID)
-  if (member.roles.find('name', tag)) {
-    member.removeRole(GUILD.roles.find('name', tag).id).then(() => {
-      if (
-        !(
-          member.roles.find('name', "Lyon's Pride") ||
-          member.roles.find('name', "Maxson's Pride") ||
-          member.roles.find('name', 'Midwest Chapter') ||
-          member.roles.find('name', 'First Chapter') ||
-          member.roles.find('name', 'Mojave Chapter') ||
-          member.roles.find('name', 'Outcasts')
-        )
-      )
-        member.removeRole(GUILD.roles.find('name', 'Brotherhood of Steel').id)
-    })
-  } else {
-    member.addRole(GUILD.roles.find('name', 'Brotherhood of Steel').id)
-    member.addRole(GUILD.roles.find('name', tag).id)
-  }
-}
-
-
 //Handles changing Tags, most of it is useless to us, last is important
+//Gets the users info, and the name of the tag to be toggled.
 function handleTags(member, tag) {
   const GUILD = client.guilds.find('id', SERVER_ID)
   if (TAGS.includes(tag)) {
     let userTags = member.roles.filterArray(i => TAGS.includes(i.name))
+    //Next 3 lines remove all roles except age if someone clicked 'Not Specified'
     if (tag === 'Not Specified') {
       for (let tag of userTags) {
         if (tag.name === '+18' || tag.name === '-18') continue
         member.removeRole(GUILD.roles.find('name', tag.name).id)
       }
+      //This line adds the 'Not specified' role to those who ask
       member.addRole(GUILD.roles.find('name', 'Not Specified').id)
       return
     }
+    //Next 8 lines removes both age roles if 'NoAge' was specified
     if (tag === 'NoAge') {
       if (member.roles.find('name', '-18')) {
         member.removeRole(GUILD.roles.find('name', '-18').id)
@@ -136,7 +52,7 @@ function handleTags(member, tag) {
       }
       return
     }
-    //Try to sort out this code
+    //If the tag was +/- 18, it  removes the one currently selected, and adds the other one.  If neither is selected (NoAge), just selects the correct role
     if (tag === '+18' || tag === '-18') {
       if (member.roles.find('name', '-18')) {
         member.removeRole(GUILD.roles.find('name', '-18').id).then(() => {
@@ -152,40 +68,19 @@ function handleTags(member, tag) {
       return
     }
     
-    //Get rid of all this, it's useless
+    //If the member has 'Not Specified' role, it removes it.
     if (member.roles.find('name', 'Not Specified')) {
       member.removeRole(GUILD.roles.find('name', 'Not Specified').id)
     }
-    if (tag === 'Brotherhood of Steel (First Chapter)') {
-      toggleRole(member, 'First Chapter')
-      return
-    }
-    if (tag === "Brotherhood of Steel (Lyon's Pride)") {
-      toggleRole(member, "Lyon's Pride")
-      return
-    }
-    if (tag === 'Brotherhood of Steel (Mojave Chapter)') {
-      toggleRole(member, 'Mojave Chapter')
-      return
-    }
-    if (tag === "Brotherhood of Steel (Maxson's Pride)") {
-      toggleRole(member, "Maxson's Pride")
-      return
-    }
-    if (tag === 'Brotherhood of Steel (Midwest Chapter)') {
-      toggleRole(member, 'Midwest Chapter')
-      return
-    }
-    if (tag === 'Brotherhood of Steel (Outcasts)') {
-      toggleRole(member, 'Outcasts')
-      return
-    }
+    //If the tag == a role that the user currently has, remove it.  Otherwise, add it.
     if (member.roles.find('name', tag)) {
       member.removeRole(GUILD.roles.find('name', tag).id)
     } else {
       member.addRole(GUILD.roles.find('name', tag).id)
     }
-  } else {
+  }
+  //If someone send an invalid TAG, then log it.
+  else {
     console.log(member.name, '#', member.discriminator, '- Tag not recognized')
   }
 }
@@ -204,6 +99,7 @@ nextApp.prepare().then(() => {
   app.use(bodyParser.urlencoded({ extended: false }))
   app.use(bodyParser.json())
 
+//This code handles the callback when the Discord Auth sends the user back to GOAT
   app.get('/callback', (req, res) => {
     axios({
       method: 'post',
@@ -240,6 +136,7 @@ nextApp.prepare().then(() => {
       })
   })
 
+//This refreshes the user token
   app.post('/refresh', (req, res) => {
     axios({
       method: 'post',
@@ -265,7 +162,7 @@ nextApp.prepare().then(() => {
       })
   })
 
-//Has Block of useless code regarding Brotherhood of Steel, selecting all BoS versions applicable.  Only part of this is useful.
+//Get a list of user roles.  For each role, it gets it's name, and then sends a list of all roles to FormVault
   app.get('/userTags/:userid', (req, res) => {
     if (req.params.userid) {
       axios({
@@ -283,66 +180,52 @@ nextApp.prepare().then(() => {
             client.guilds.find('id', SERVER_ID).roles.find('id', tag).name
           )
         }
-        console.log(tags)
         res.send(tags)
-      })
+      }).catch(err => res.send('error'))
     } else {
       res.send(req.body)
     }
   })
-
-  app.get('/userRoles/:userid', (req, res) => {
-    axios({
-      method: 'GET',
-      url: `https://discordapp.com/api/v6/guilds/${SERVER_ID}/members/${
-        req.params.userid
-      }`,
-      headers: {
-        Authorization: 'Bot ' + token
-      }
-    })
-      .then(({ data }) => {
-        res.send(data.roles)
-      })
-      .catch(err => res.send('error'))
-  })
-
   
-//MyCode to get all channels from specific category
-
+  
+//My code to get all channels from specific category and put into TAGS(Used to be hardcoded), along with anything contained in the EXTRA_TAGS environment variables
     app.get('/serverChannels', (req, res) => {
     axios({
       method: 'GET',
       url: `https://discordapp.com/api/v6/guilds/${SERVER_ID}/channels
-	`,
+    `,
       headers: {
         Authorization: 'Bot ' + token
       }
     })
-		.then(function(data){
-            var TAGS = []
+        .then(function(data){
             try{
+                var EXTRA_TAGS = process.env.EXTRA_TAGS.split(',')
+                var areExtraTags = 1
+            }
+            catch(err){
+                console.log(err)
+                var areExtraTags = 0}
+            var TAGS = []
+            if (areExtraTags == 1){
                 for (i in EXTRA_TAGS){
                     TAGS.push(EXTRA_TAGS[i])
                 }
-            }
-            catch(err){
-                TAGS = []
-            }
+            } else{}
             for (i in data.data){
-				if (data.data[i]['name'] == CHANNEL_CATEGORY  && data.data[i]['type'] == 4){
-					for (j in data.data){
-						if (data.data[i]['id'] == data.data[j]['parent_id']){
-							TAGS.push(data.data[j]['name'])
-						}
-					}
-				}
-			}
-		res.send(TAGS)
-		})
-		.catch(err => res.send('error'))
+                if (data.data[i]['name'] == CHANNEL_CATEGORY  && data.data[i]['type'] == 4){
+                    for (j in data.data){
+                        if (data.data[i]['id'] == data.data[j]['parent_id']){
+                            TAGS.push(data.data[j]['name'])
+                        }
+                    }
+                }
+            }
+        res.send(TAGS)
+        }).catch(err => console.log(err))
   })
-  
+
+//This code gets a token from the user, checks to see if the user is new (based on the user having DEFAULT_SERVER_ROLE).  If he does, it calls addMembership(Which changes his roles).  Then calls handleTags.
   app.post('/handleTags', (req, res) => {
     if (req.body.token) {
       axios({
@@ -356,11 +239,12 @@ nextApp.prepare().then(() => {
         const member = client.guilds
           .find('id', SERVER_ID)
           .members.find('id', data.id)
-        if (member.roles.find('name', DEFAULT_SERVER_ROLE)) addMembership(member)
+        if (member.roles.find('name', DEFAULT_SERVER_ROLE)){
         addMembership(member)
+        }
         handleTags(member, req.body.tag)
         res.send(member)
-      })
+      }).catch(err => console.log(err))
     } else {
       res.send(req.body)
     }

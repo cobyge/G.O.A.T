@@ -33,6 +33,8 @@ Make a file called .env and put it in the project root. The format should be as 
 	#Extra Tags included such as age, etc.  Seperated by comma without spaces
 	EXTRA_TAGS=
     
+Install yarn from yarnpkg.com
+
 Once you have that set up, run:
 
     yarn
@@ -63,8 +65,8 @@ Public TODO:
     
     Decide if Karma page is something we want in our server.(Make optional?)
     
-    Figure out now.json file renaming.  Add to README
+    Figure out now.json file renaming.  Add now deployment to README
     
-    Change the way this server currently adds new members:  It currently has it's roles hardcoded into the body, I want to make some of them come from the server (channels), and some come from env-file (Default role, and role to change to (if-any).
+    Change the way this server currently adds new members
 	
 	Add explanation of the tagging system

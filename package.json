@@ -10,8 +10,7 @@
     "deploy": "now scale GOAT.now.sh 0 && ping 127.0.0.1 -n 11 > nul && now --public && now alias rm GOAT.now.sh --yes && now alias && now scale GOAT.now.sh sfo1 1"
   },
   "keywords": [],
-  "author": "Henrick Mello",
-  "contributor": "Coby Geralnik",
+  "authors": [{ "name": "Henrick Mello"}, {"name": "Coby Geralnik", "email": "Cobygood@gmail.com"}],
   "license": "MIT",
   "dependencies": {
     "axios": "^0.18.0",
@@ -21,7 +20,7 @@
     "dotenv": "^6.0.0",
     "express": "^4.16.3",
     "fs": "0.0.1-security",
-    "next": "^6.0.2",
+    "next": "^6.1.2",
     "qs": "^6.5.1",
     "react": "^16.2.0",
     "react-dom": "^16.2.0",

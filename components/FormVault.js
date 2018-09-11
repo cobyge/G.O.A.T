@@ -13,73 +13,10 @@ import {
 import axios from 'axios'
 import { getToken } from '../utils/auth'
 
-//Tags for all the games
-/*const TAGS = [
-  'Blades',
-  'Regulators (FO1)',
-  'Unity',
-  'Brotherhood of Steel',
-  'Followers of the Apocalypse',
-  'Raider Gangs',
-  'Enclave',
-  'Shi',
-  'Apple',
-  'Unity',
-  'Vault City',
-  'Tanker Vagrants',
-  'Raider Gangs',
-  'Enclave',
-  "Lyon's Pride",
-  'Regulators (FO3)',
-  'Tunnel Snakes',
-  "Reilly's Rangers",
-  'Talon Company',
-  'Children of the Atom',
-  'Kings',
-  'BoS - Outcasts',
-  'Raider Gangs',
-  'Independent Vegas (Yes Man)',
-  'Mr. House',
-  "Caesar's Legion",
-  'New California Republic',
-  'Followers of the Apocalypse',
-  'Great Khans',
-  'Boomers',
-  'Brotherhood of Steel',
-  'Raider Gangs',
-  'Sorrows',
-  'Twisted Hairs',
-  'Railroad',
-  'Minutemen',
-  'Institute',
-  "Maxson's Pride",
-  'Atom Cats',
-  'Outcasts',
-  'Children of the Atom',
-  'Raider Gangs',
-  'Midwest Chapter',
-  'Not Specified',
-  'Not Specified',
-  '+18',
-  '-18',
-  'Brotherhood of Steel (First Chapter)',
-  "Brotherhood of Steel (Lyon's Pride)",
-  'Brotherhood of Steel (Mojave Chapter)',
-  "Brotherhood of Steel (Maxson's Pride)",
-  'Brotherhood of Steel (Midwest Chapter)',
-  'Brotherhood of Steel (Outcasts)'
-]*/
-
 var TAGS = []
 var i = 0
 var j = 0
-//Add code to make sure there are no duplicates (otherwise the list will duplicate itself every visit to this page
-axios({
-  method: 'GET',
-  url: `/serverChannels`}).then(function(response){
-	  TAGS = []
-      TAGS.push(response.data)
-	  })
+
 
   
   
@@ -88,7 +25,7 @@ const TagCategories = {
 
   'A': [
     'Enclave',
-	'Apple',
+    'Apple',
     'Shi',
     'Vault City',
     'Tanker Vagrants',
@@ -127,7 +64,9 @@ const TagCategories = {
     'Children of the Atom',
     'Raider Gangs'
   ],
-  'Fallout Tactics': ['Brotherhood of Steel (Midwest Chapter)']
+  'Fallout Tactics': [
+  'Brotherhood of Steel (Midwest Chapter)'
+  ]
 }
 
 export default class TagsForm extends React.Component {
@@ -142,21 +81,30 @@ export default class TagsForm extends React.Component {
     }
   }
 
-//Sets the 'tags' var to contain all the tags that are also in TAGS.  Gets this list from server.
+//Gets a list of all the roles that the user currently has in the server.  Then it only takes the roles that are both in TAGS, and in the server, and it activates them on the webpage.
   componentDidMount() {
+      
+    //Gets list of channels in specific category in Server.  Also appends the EXTRA_TAGS environment variable
+    axios({
+      method: 'GET',
+      url: `/serverChannels`}).then(function(response){
+          TAGS = []
+          TAGS.push(response.data)
+          }).catch(err => console.log(err))
+          
     axios({
       method: 'GET',
       url: `/userTags/${this.props.userid}`
     }).then(({ data }) => {
       this.setState({ tags: data.filter(i => TAGS.includes(i)) })
       this.setState({ loading: false })
-    })
+    }).catch(err => console.log(err))
   }
   handleSubmit(e) {}
   handleClose() {
     location.reload()
   }
-//When boxes are clicked on, if the box was not 'Not Specified', then unchecks 'Not Specified', and checks the other boxes
+//When a box is clicked, if the box was empty, unchecks 'Not specified', and checks the box just clicked.  Otherwise (if the box was selected), it unchecks the box.  It then calls handleTags, which is explained in the code in index.js where the function is defined.
   handleChange = (answ, tag) => {
     if (!this.state.tags.includes(tag.value))
       this.setState({
@@ -174,7 +122,8 @@ export default class TagsForm extends React.Component {
       data: { tag: tag.value, token: getToken() }
     })
   }
-//Handles the "Not Specified" button
+  
+//Deselects all roles except for age.
   handleNotSpecified() {
     this.setState({
       tags: [
@@ -187,9 +136,9 @@ export default class TagsForm extends React.Component {
       method: 'POST',
       url: `/handleTags`,
       data: { tag: 'Not Specified', token: getToken() }
-    })
+    }).catch(err => console.log(err))
   }
-//Handles changing the age
+//Handles changing the age.  Just makes sure that only one (or zero) of the two age roles is selected.
   handleAge(e, { value }) {
     if (value === '+18') {
       this.setState({
@@ -208,8 +157,10 @@ export default class TagsForm extends React.Component {
       method: 'POST',
       url: `/handleTags`,
       data: { tag: value, token: getToken() }
-    })
+    }).catch(err => console.log(err))
   }
+  
+//All of this controls the actual webpage content (After being logged in).  Need to change this to display my new TagCategories correctly.
   render() {
     return (
       <React.Fragment>
