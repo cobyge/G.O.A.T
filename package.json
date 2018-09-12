@@ -6,11 +6,19 @@
   "scripts": {
     "dev": "backpack dev",
     "build": "next build && backpack build",
-    "start": "NODE_ENV=production node build/main.js",
+    "start": "node build/main.js",
     "deploy": "now scale GOAT.now.sh 0 && ping 127.0.0.1 -n 11 > nul && now --public && now alias rm GOAT.now.sh --yes && now alias && now scale GOAT.now.sh sfo1 1"
   },
   "keywords": [],
-  "authors": [{ "name": "Henrick Mello"}, {"name": "Coby Geralnik", "email": "Cobygood@gmail.com"}],
+  "authors": [
+    {
+      "name": "Henrick Mello"
+    },
+    {
+      "name": "Coby Geralnik",
+      "email": "Cobygood@gmail.com"
+    }
+  ],
   "license": "MIT",
   "dependencies": {
     "axios": "^0.18.0",
