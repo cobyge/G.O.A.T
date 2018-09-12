@@ -17,15 +17,7 @@ const CHANNEL_CATEGORY = process.env.CHANNEL_CATEGORY
 client.on('ready', () => {
   console.log(`> Bot Ready`)
 })
-
-//On first log-in *to this website*, this gets called, and changes the default role.  *TODO*: Change hardcoded roles into a CONST up above
-function addMembership(member) {
-  const GUILD = client.guilds.find('id', SERVER_ID)
-  member.addRole(GUILD.roles.find('name', 'Vault Dweller').id).then(() => {
-    member.removeRole(GUILD.roles.find('name', DEFAULT_SERVER_ROLE).id)
-    member.addRole(GUILD.roles.find('name', 'Vault Renegade [0]').id)
-  })
-}
+var TAGS = []
 
 //Handles changing Tags, most of it is useless to us, last is important
 //Gets the users info, and the name of the tag to be toggled.
@@ -36,38 +28,12 @@ function handleTags(member, tag) {
     //Next 3 lines remove all roles except age if someone clicked 'Not Specified'
     if (tag === 'Not Specified') {
       for (let tag of userTags) {
-        if (tag.name === '+18' || tag.name === '-18') continue
         member.removeRole(GUILD.roles.find('name', tag.name).id)
       }
       //This line adds the 'Not specified' role to those who ask
       member.addRole(GUILD.roles.find('name', 'Not Specified').id)
       return
-    }
-    //Next 8 lines removes both age roles if 'NoAge' was specified
-    if (tag === 'NoAge') {
-      if (member.roles.find('name', '-18')) {
-        member.removeRole(GUILD.roles.find('name', '-18').id)
-      } else if (member.roles.find('name', '+18')) {
-        member.removeRole(GUILD.roles.find('name', '+18').id)
-      }
-      return
-    }
-    //If the tag was +/- 18, it  removes the one currently selected, and adds the other one.  If neither is selected (NoAge), just selects the correct role
-    if (tag === '+18' || tag === '-18') {
-      if (member.roles.find('name', '-18')) {
-        member.removeRole(GUILD.roles.find('name', '-18').id).then(() => {
-          member.addRole(GUILD.roles.find('name', tag).id)
-        })
-      } else if (member.roles.find('name', '+18')) {
-        member.removeRole(GUILD.roles.find('name', '+18').id).then(() => {
-          member.addRole(GUILD.roles.find('name', tag).id)
-        })
-      } else {
-        member.addRole(GUILD.roles.find('name', tag).id)
-      }
-      return
-    }
-    
+    }    
     //If the member has 'Not Specified' role, it removes it.
     if (member.roles.find('name', 'Not Specified')) {
       member.removeRole(GUILD.roles.find('name', 'Not Specified').id)
@@ -79,9 +45,9 @@ function handleTags(member, tag) {
       member.addRole(GUILD.roles.find('name', tag).id)
     }
   }
-  //If someone send an invalid TAG, then log it.
+  //If someone sends an invalid TAG, then log it.
   else {
-    console.log(member.name, '#', member.discriminator, '- Tag not recognized')
+    console.log(member.user.username, '#', member.user.discriminator, '- Tag not recognized - ', tag)
   }
 }
 
@@ -188,7 +154,7 @@ nextApp.prepare().then(() => {
   })
   
   
-//My code to get all channels from specific category and put into TAGS(Used to be hardcoded), along with anything contained in the EXTRA_TAGS environment variables
+//My code to get all channels from specific category and put into TAGS(Used to be hardcoded)
     app.get('/serverChannels', (req, res) => {
     axios({
       method: 'GET',
@@ -199,19 +165,7 @@ nextApp.prepare().then(() => {
       }
     })
         .then(function(data){
-            try{
-                var EXTRA_TAGS = process.env.EXTRA_TAGS.split(',')
-                var areExtraTags = 1
-            }
-            catch(err){
-                console.log(err)
-                var areExtraTags = 0}
-            var TAGS = []
-            if (areExtraTags == 1){
-                for (i in EXTRA_TAGS){
-                    TAGS.push(EXTRA_TAGS[i])
-                }
-            } else{}
+			TAGS = []
             for (i in data.data){
                 if (data.data[i]['name'] == CHANNEL_CATEGORY  && data.data[i]['type'] == 4){
                     for (j in data.data){
@@ -234,14 +188,10 @@ nextApp.prepare().then(() => {
         headers: {
           Authorization: 'Bearer ' + req.body.token
         }
-        //Next bit of code checks to see if the user is a member of group DEFAULT_SERVER_ROLE, and if it is, calls addMembership
       }).then(({ data }) => {
         const member = client.guilds
           .find('id', SERVER_ID)
           .members.find('id', data.id)
-        if (member.roles.find('name', DEFAULT_SERVER_ROLE)){
-        addMembership(member)
-        }
         handleTags(member, req.body.tag)
         res.send(member)
       }).catch(err => console.log(err))
