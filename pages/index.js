@@ -5,25 +5,20 @@ import { Dimmer, Loader } from 'semantic-ui-react'
 
 
 class index3 extends Component {
-  componentDidMount() {
-    document.title = 'Auto-System - Home'
-    if (Auth.getToken() || localStorage.getItem('rules')) {
-      Router.push('/goat')
-      return
-    }
-    if (!Auth.getToken() && !localStorage.getItem('rules')) {
-      Router.push('/rules')
-    }
-  }
-  render() {
-    return (
-      <Dimmer active>
-        <Loader inverted size="big">
-          Loading
-        </Loader>
-      </Dimmer>
-    )
-  }
+	componentDidMount() {
+		document.title = 'Auto-System - Home'
+		Router.push('/goat')
+		return
+		
+	  }
+	  render() {
+		return (
+		  <Dimmer active>
+			<Loader inverted size="big">
+			  Loading
+			</Loader>
+		  </Dimmer>
+		)
+	}
 }
-
 export default index3
