@@ -1,6 +1,5 @@
 import React from 'react'
 import { Image, Button, Loader, Dimmer, Container } from 'semantic-ui-react'
-import axios from 'axios'
 import {
   refreshToken,
   getToken,
@@ -8,7 +7,7 @@ import {
   logout,
   checkMembership
 } from '../utils/auth'
-
+import axios from 'axios'
 import Profile from '../components/Profile'
 import Form from '../components/FormVault'
 
@@ -18,6 +17,9 @@ const SITE_URL = process.env.SITE_URL
   : 'http://localhost:3000'
 const CLIENT_ID = process.env.CLIENT_ID
 
+var TAGS = []
+var i = 0
+
 //Gets token and code for user credentials
 function getUrlParams(search) {
   let hashes = search.slice(search.indexOf('?') + 1).split('&')
@@ -26,8 +28,8 @@ function getUrlParams(search) {
     return Object.assign(params, { [key]: decodeURIComponent(val) })
   }, {})
 }
-	
-	
+   
+    
 export default class Index extends React.Component {
   constructor() {
     super()
@@ -37,7 +39,6 @@ export default class Index extends React.Component {
       loading: true
     }
   }
-  
 //Check if logged in, if logged in, loadInfo, otherwise get info then loadInfo
   componentDidMount() {
     document.title = 'Auto-System'
@@ -63,12 +64,11 @@ export default class Index extends React.Component {
     }
   }
 //Loads user-info, if user is a member, then continue, else don't
-//People with no icon set get a no-icon symbol, maybe fix?
   loadInfo() {
     getInfo()
       .then(({ data }) => {
         this.setState({ user: data })
-		document.title =
+        document.title =
           'Auto-System - ' +
           data.username +
           '#' +
@@ -83,6 +83,15 @@ export default class Index extends React.Component {
         })
       })
       .catch(err => console.log(err))
+	  //Gets list of channels in specific category in Server.  Also appends the EXTRA_TAGS environment variable
+axios({
+  method: 'GET',
+  url: `/serverChannels`}).then(function(response){
+	TAGS = []
+	for (i in response.data){
+	TAGS.push(response.data[i])
+	}
+  }).catch(err => console.log(err)) 
   }
   onLogout() {
     logout()
@@ -100,6 +109,7 @@ export default class Index extends React.Component {
         </Dimmer>
       )
     }
+//People with no icon set get a no-icon symbol, maybe fix?
     return (
       <Container>
         {(this.state.loggedin &&
@@ -117,7 +127,7 @@ export default class Index extends React.Component {
               {(this.state.member && (
                 <Form
                   userid={this.state.user.id}
-                  //pending={this.state.isPending}  Useless???
+				  taglist={TAGS}
                 />
               )) || <h1>You are not a member of this wiki</h1>}
             </React.Fragment>
