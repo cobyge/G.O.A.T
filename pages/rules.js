@@ -3,8 +3,6 @@ import Router from 'next/router'
 import { Container } from 'semantic-ui-react'
 
 import ManualRules from '../components/ManualRules'
-import ManualTags from '../components/ManualTags'
-import ManualKarma from '../components/ManualKarma'
 import ManualNetwork from '../components/ManualNetwork'
 
 //This helps the stepper step
@@ -13,10 +11,6 @@ const Stepper = ({ step, next }) => {
     case 0:
       return <ManualRules next={next} />
     case 1:
-      return <ManualTags next={next} />
-    case 2:
-      return <ManualKarma next={next} />
-    case 3:
       return <ManualNetwork next={next} />
   }
 }
@@ -30,7 +24,7 @@ class index2 extends Component {
   }
 //This moves through all the pages
   handleNext() {
-    if (this.state.step === 3) {
+    if (this.state.step === 1) {
       Router.push('/goat')
       localStorage.setItem('rules', 'true')
       return
