@@ -154,7 +154,7 @@ nextApp.prepare().then(() => {
   })
   
   
-//My code to get all channels from specific category and put into TAGS(Used to be hardcoded)
+//Gets all channels from specific category and put into TAGS(Used to be hardcoded)
     app.get('/serverChannels', (req, res) => {
     axios({
       method: 'GET',
@@ -170,8 +170,8 @@ nextApp.prepare().then(() => {
                 if (data.data[i]['name'] == CHANNEL_CATEGORY  && data.data[i]['type'] == 4){
                     for (j in data.data){
                         if (data.data[i]['id'] == data.data[j]['parent_id']){
-                            TAGS.push(data.data[j]['name'])
-                        }
+								TAGS.push(data.data[j]['name'])
+						}
                     }
                 }
             }

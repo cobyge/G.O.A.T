@@ -56,4 +56,4 @@ Public TODO:
             
     Figure out now.json file renaming.  Add now deployment to README
     	
-	Add explanation of the tagging system
+	Add explanation of the tagging system - Channels need to be named the same as roles.  If there are symbols/emojis in the channel name, the role should start with the same emoji.
