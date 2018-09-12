@@ -76,7 +76,7 @@ nextApp.prepare().then(() => {
         grant_type: 'authorization_code',
         code: req.query.code || req.body.code || req.params.code,
         redirect_uri: process.env.SITE_URL
-          ? SITE_URL + '/callback'
+          ? process.env.SITE_URL + '/callback'
           : 'http://localhost:3000/callback'
       }),
       headers: { 'content-type': 'application/x-www-form-urlencoded' }
@@ -113,7 +113,7 @@ nextApp.prepare().then(() => {
         grant_type: 'refresh_token',
         refresh_token: req.body.refresh_token,
         redirect_uri: process.env.SITE_URL
-          ? SITE_URL + '/callback'
+          ? process.env.SITE_URL + '/callback'
           : 'http://localhost:3000/callback'
       }),
       headers: { 'content-type': 'application/x-www-form-urlencoded' }
