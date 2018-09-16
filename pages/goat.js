@@ -83,15 +83,15 @@ export default class Index extends React.Component {
         })
       })
       .catch(err => console.log(err))
-	  //Gets list of channels in specific category in Server.  Also appends the EXTRA_TAGS environment variable
-axios({
-  method: 'GET',
-  url: `/serverChannels`}).then(function(response){
-	TAGS = []
-	for (i in response.data){
-	TAGS.push(response.data[i])
-	}
-  }).catch(err => console.log(err)) 
+//Gets list of channels in specific category in Server.
+  axios({
+    method: 'GET',
+    url: `/serverChannels`}).then(function(response){
+      TAGS = []
+	  for (i in response.data){
+		TAGS.push(response.data[i])
+	  }
+    }).catch(err => console.log(err)) 
   }
   onLogout() {
     logout()
@@ -99,7 +99,15 @@ axios({
     document.title =
       'Auto-System - Tags'
   }
-  render() {
+
+  getAvatar(){
+   if (this.state.user.avatar == null){
+	   return ('https://discordapp.com/assets/1cbd08c76f8af6dddce02c5138971129.png')}
+	else{
+		return(`https://cdn.discordapp.com/avatars/${this.state.user.id}/${this.state.user.avatar}.png`)}
+	}
+
+	render() {
     if (this.state.loading) {
       return (
         <Dimmer active>
@@ -109,16 +117,13 @@ axios({
         </Dimmer>
       )
     }
-//People with no icon set get a no-icon symbol, maybe fix?
     return (
       <Container>
         {(this.state.loggedin &&
           this.state.user && (
             <React.Fragment>
               <Profile
-                avatar={`https://cdn.discordapp.com/avatars/${
-                  this.state.user.id
-                }/${this.state.user.avatar}.png`}
+                avatar={this.getAvatar()}
                 username={
                   this.state.user.username + '#' + this.state.user.discriminator
                 }

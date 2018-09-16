@@ -45,9 +45,9 @@ When someone is looking for a game, you will be able to see a message from a bot
 			
 		case 'lookingforgame':
 		case 'lfg':
-			//Makes sure that the correct number of arguments are given.
-			if (!args[1]){message.channel.send('Forgot Arguments'); message.delete(); break}
-			if (!(RegExp('\\d+').test(args[1]))) {message.channel.send('How many players are you looking for?'); message.delete(); break}
+			//Makes sure that the correct number of arguments are given, in the correct format
+			if (!(args[1] || (RegExp('\w+').test(args[0])))){message.channel.send('Forgot Arguments'); message.delete(); break}
+			if (!(RegExp('\\d+').test(args[1])) || args[1] == 0) {message.channel.send('How many players are you looking for?'); message.delete(); break}
 			let [game, amountofplayers] = args
 			amountofplayers = amountofplayers.match(/\d+/g)[0].split(" ").slice(-1)[0].replace(/\D/g,'')
 			message.reply(`is looking for a game of ${game}.  They need another ${amountofplayers}.  Click on the reaction to join.`).then(message=>
@@ -214,7 +214,7 @@ nextApp.prepare().then(() => {
   })
   
   
-//Gets all channels from specific category and put into TAGS(Used to be hardcoded)
+//Gets all channels from specific category and put into TAGS
     app.get('/serverChannels', (req, res) => {
     axios({
       method: 'GET',
@@ -230,7 +230,7 @@ nextApp.prepare().then(() => {
                 if (data.data[i]['name'] == CHANNEL_CATEGORY  && data.data[i]['type'] == 4){
                     for (j in data.data){
                         if (data.data[i]['id'] == data.data[j]['parent_id']){
-								TAGS.push(data.data[j]['name'])
+								TAGS.push(data.data[j]['name'].match(/\w+-*\w+/g)[0])
 						}
                     }
                 }

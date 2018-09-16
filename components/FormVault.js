@@ -26,25 +26,17 @@ export default class TagsForm extends React.Component {
       tags: [],
       loading: true
     }
- //Gets list of channels in specific category in Server
-    axios({
-      method: 'GET',
-      url: `/serverChannels`}).then(function(response){
-        TAGS = []
-        for (i in response.data){
-        TAGS.push(response.data[i])
-        }
-      }).catch(err => console.log(err))
   }
 
 
   componentDidMount() {
 //Gets a list of all the roles that the user currently has in the server.  Then it only takes the roles that are both in TAGS, and in the server, and it activates them on the webpage.  
-    axios({
+    TAGS = this.props.taglist
+	axios({
       method: 'GET',
       url: `/userTags/${this.props.userid}`
     }).then(({ data }) => {
-      this.setState({ tags: data.filter(i => TAGS.includes(i)) })
+      this.setState({ tags: data.filter(i => (TAGS.includes(i)))})
       this.setState({ loading: false })
     }).catch(err => console.log(err))
   }
@@ -68,7 +60,9 @@ export default class TagsForm extends React.Component {
       data: { tag: tag.value, token: getToken() }
     })
   }
-
+//Function to capitalize Labels
+  capitalize(str){
+  return str.charAt(0).toUpperCase() + str.slice(1)}
 //All of this controls the actual webpage content (After being logged in).  Need to change this to display my new TagCategories correctly.
   render() {
     return (
@@ -87,7 +81,7 @@ export default class TagsForm extends React.Component {
                         return (
                           <Form.Field
                             control={Checkbox}
-                            label={tag}
+                            label={this.capitalize(tag)}
                             value={tag}
                             key={tag}
                             checked={this.state.tags.includes(tag)}
