@@ -13,11 +13,72 @@ const CLIENT_SECRET = process.env.CLIENT_SECRET
 const token = process.env.CLIENT_TOKEN
 const DEFAULT_SERVER_ROLE = process.env.DEFAULT_SERVER_ROLE
 const CHANNEL_CATEGORY = process.env.CHANNEL_CATEGORY
+const BOT_COMMAND_CHANNEL = process.env.BOT_COMMAND_CHANNEL
+const prefix = process.env.BOT_COMMAND_PREFIX
+var TAGS = []
 
 client.on('ready', () => {
   console.log(`> Bot Ready`)
 })
-var TAGS = []
+
+//Creating game matcher here:
+client.on("message", (message) => {
+	//Only continue if message is meant for bot, and was not sent by a bot.3
+	if (!(message.channel.name == BOT_COMMAND_CHANNEL)) return
+	if (!message.content.startsWith(prefix)|| message.author.bot)return
+	
+	//Split message into command, and into args for command
+	const args = message.content.slice(prefix.length).trim().split(/ *,+ */g)
+    const command = args.shift().toLowerCase().split(/ +/g)[0]
+	
+	//Need to create a help page
+	switch (command){
+		case 'help':
+			message.delete()
+			message.channel.send(`
+Finding games:
+The only current command is: !lookingforgame/!lfg:  This command will help you find people to play games with.  You can use this command, and tell it which game you are looking for, and how many more players you need.  The command looks like this: '!lfg, Monster Hunter: World, 3'.  This tells the bot that you are looking to play Monster Hunter World, and you are looking for 3 more people to play with.  Once 3 people join you, your post will be deleted, and you will get messages from the bot telling who wants to play with you.  Make sure to use commas to seperate the command, game, and number of players.
+
+Joining Games:
+When someone is looking for a game, you will be able to see a message from a bot, and a reaction under that.  When you click on the reaction, you will be added to the player count, and the bot will let the person looking know.
+			`).catch(err => console.log(err))
+			break
+			
+		case 'lookingforgame':
+		case 'lfg':
+			//Makes sure that the correct number of arguments are given.
+			if (!args[1]){message.channel.send('Forgot Arguments'); message.delete(); break}
+			if (!(RegExp('\\d+').test(args[1]))) {message.channel.send('How many players are you looking for?'); message.delete(); break}
+			let [game, amountofplayers] = args
+			message.reply(`is looking for a game of ${game}.  They need another ${amountofplayers}.  Click on the reaction to join.`).then(message=>
+			message.react('✋'))
+			message.delete()
+			break
+		
+		default:
+			message.delete()
+			message.channel.send("Command not found").catch(err => console.log(err))
+			break
+	}
+})
+
+client.on("messageReactionAdd", (reaction, user) => {
+	if (!(reaction.message.channel.name == BOT_COMMAND_CHANNEL) || reaction.emoji != '✋' || user == client.user)return
+	var currentPlayers = reaction.count - 1
+	var goalPlayers = reaction.message.edits.slice(-1)[0].content.match(/need another \d+/g)[0].split(" ").slice(-1)[0]
+	var playersNeeded = goalPlayers - currentPlayers
+	var hostPlayer = reaction.message.mentions.users.last()
+	//When Game is full, edit message to show that the game is full.  Otherwise, edit it to reflect that.
+	if (playersNeeded == 0){
+		reaction.message.clearReactions()
+		reaction.message.edit(`${hostPlayer} has found his players.`)
+	}
+	else {reaction.message.edit(`${reaction.message.edits.slice(-1)[0]} ${hostPlayer} has currently found
+		${currentPlayers}.  Need ${playersNeeded}`)}
+	
+	//Handle users
+	hostPlayer.send(`${user} wants to play with you`).catch(err => console.log(err))
+})
 
 //Handles changing Tags, most of it is useless to us, last is important
 //Gets the users info, and the name of the tag to be toggled.

@@ -23,10 +23,12 @@ Make a file named .env and put it in the project root. The format should be as f
     CLIENT_TOKEN=
     #URL of callback site for DiscordAPI, leave empty for default localhost:3000
     SITE_URL=
-
 	#Name of category containing all games.  Category names are shown capitalized in Discord regardless of actual capitalization, so I reccommend naming your channel in all caps for simplicity
 	CHANNEL_CATEGORY=CATEGORY123
-
+	#Channel for bot commands.  Bot will only work in this channel.
+	BOT_COMMAND_CHANNEL=
+	#Prefix for Bot command.  (e.g: !help | @help | $help, etc)
+	BOT_COMMAND_PREFIX=!
     
 Install yarn from yarnpkg.com
 
