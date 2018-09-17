@@ -43,19 +43,7 @@ Then run:
 
 And you'll be running in development mode.
 
-Browse to http://localhost:3000
+Browse to http://localhost:3000, and check it out.
 
-Changing font:
-Should be able to easily change font from /static/monofont.ttf
-Font rules are contained in /pages/goat.js, and in /pages/rules.js
-
-Public TODO:
-
-    TRANSLATE INTO ENGLISH:
-        /pages/goat.js
-        /components/ManualNetwork.js
-        /components/ManualRules.js
-            
-    Figure out now.json file renaming.  Add now deployment to README
-    	
-	Add explanation of the tagging system - Channels need to be named the same as roles.  If there are symbols/emojis in the channel name, the role should start with the same emoji.
+Deployment to Now:
+	Coming soon

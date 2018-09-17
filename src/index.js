@@ -112,7 +112,6 @@ function handleTags(member, tag) {
 }
 
 client.login(token)
-
 const dev = process.env.NODE_ENV !== 'production'
 const nextApp = next({ dev })
 const handle = nextApp.getRequestHandler()

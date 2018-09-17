@@ -62,7 +62,7 @@ export default class Index extends React.Component {
       this.setState({ loading: false })
     }
   }
-//Loads user-info, if user is a member, then continue, else don't
+//Loads user-info, if user is in the server, then continue, else keep this page.
   loadInfo() {
     getInfo()
       .then(({ data }) => {
