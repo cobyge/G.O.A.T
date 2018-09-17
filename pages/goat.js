@@ -73,7 +73,6 @@ export default class Index extends React.Component {
           '#' +
           data.discriminator
         checkMembership().then(result => {
-          console.log(result)
 		  if (result) {
             this.setState({ member: true })
             this.setState({ loading: false })
@@ -83,6 +82,7 @@ export default class Index extends React.Component {
         })
       })
       .catch(err => console.log(err))
+	  
 //Gets list of channels in specific category in Server.
   axios({
     method: 'GET',

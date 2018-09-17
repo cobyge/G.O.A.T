@@ -54,8 +54,8 @@ When someone is looking for a game, you will be able to see a message from a bot
 			message.react('✋'))
 			message.delete()
 			break
-		
-		default:
+
+			default:
 			message.delete()
 			message.channel.send("Command not found").catch(err => console.log(err))
 			break
