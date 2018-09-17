@@ -16,7 +16,6 @@ const SITE_URL = process.env.SITE_URL
   ? process.env.SITE_URL
   : 'http://localhost:3000'
 const CLIENT_ID = process.env.CLIENT_ID
-
 var TAGS = []
 var i = 0
 
@@ -132,7 +131,7 @@ export default class Index extends React.Component {
               {(this.state.member && (
                 <Form
                   userid={this.state.user.id}
-				  taglist={TAGS}
+				  taglist={TAGS.sort()}
                 />
               )) || <h1>You are not a member of this wiki</h1>}
             </React.Fragment>
@@ -141,24 +140,12 @@ export default class Index extends React.Component {
             <center>
               <Image src="/static/goat.png" size="medium" />
               <h1>
-                Olá, caro Vault Dweller! <br /> Seja bem-vindo ao G.O.A.T. do
-                Vault 130.
+                Hello fellow Discord user! <br /> Welcome to the server!
               </h1>
               <p>
-                Aqui você escolherá as tags de facções que serão aplicadas a
-                você para assim identificarmos a quem você mais oferece apoio na
-                franquia.
+                Here you will be presented with a list of games, and you can choose any or all of them.  Other people can see what games you play on the Discord server.
               </p>{' '}
-              <p>
-                Se identificando, você também garante sua estadia completa no
-                servidor, perdendo a tag de Wastelander e ganhando a de Vault
-                Dweller.
-              </p>
-              <p>Você pode escolher quem quiser, e mudar sempre que desejar.</p>{' '}
-              <p>
-                Lembrando que, é essencial que você escolha somente quem você
-                apoia de verdade, e que não abuse das tags.
-              </p>
+              <p>You can choose whichever games you want, and you can always come back to change your choice.</p>{' '}
               <br />
               <a
                 href={`https://discordapp.com/api/oauth2/authorize?client_id=${CLIENT_ID}&redirect_uri=${SITE_URL}/callback&response_type=code&scope=identify%20guilds`}
