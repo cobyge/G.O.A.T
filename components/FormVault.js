@@ -30,7 +30,7 @@ export default class TagsForm extends React.Component {
 
 
   componentDidMount() {
-//Gets a list of all the roles that the user currently has in the server.  Then it only takes the roles that are both in TAGS, and in the server, and it activates them on the webpage.  
+//Gets a list of all the roles that the user currently has in the server.  Then it only takes the roles that are both in TAGS, and in the server, and it activates them on the webpage.
     TAGS = this.props.taglist
 	axios({
       method: 'GET',

@@ -145,7 +145,7 @@ nextApp.prepare().then(() => {
         res.redirect(
           301,
           process.env.SITE_URL
-            ?  + '/goat?code=' +
+            ? process.env.SITE_URL + '/goat?code=' +
               access_token +
               '&refresh=' +
               refresh_token
@@ -156,8 +156,8 @@ nextApp.prepare().then(() => {
         )
       })
       .catch(err => {
-        console.log(err)
-        res.send({ error: true })
+        console.log("Callback Error\n", err)
+        res.send({ error_callback: true })
       })
   })
 
@@ -182,8 +182,8 @@ nextApp.prepare().then(() => {
         res.send({ access_token: access_token, refresh_token: refresh_token })
       })
       .catch(err => {
-        console.log(err)
-        res.send({ error: true })
+        console.log('Refresh Error\n', err)
+        res.send({ error_refresh: true })
       })
   })
 
