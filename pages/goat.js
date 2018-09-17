@@ -73,12 +73,13 @@ export default class Index extends React.Component {
           '#' +
           data.discriminator
         checkMembership().then(result => {
-          if (result) {
+          console.log(result)
+		  if (result) {
             this.setState({ member: true })
             this.setState({ loading: false })
           } else {
             this.setState({ loading: false })
-          }
+		  }
         })
       })
       .catch(err => console.log(err))

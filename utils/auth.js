@@ -56,11 +56,14 @@ export async function checkMembership() {
       }
     })
       .then(({ data }) => {
+		console.log("ID = ", SERVER_ID)
         for (let server of data) {
+			console.log(server.id)
           if (server.id === SERVER_ID) {
             resolve(true)
           }
         }
+		resolve(false)
       })
       .catch(err => console.log(err))
   }).catch(err => console.log(err))
