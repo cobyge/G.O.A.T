@@ -30,7 +30,6 @@ client.on("message", (message) => {
 	const args = message.content.slice(prefix.length).trim().split(/ *,+ */g)
     const command = args.shift().toLowerCase().split(/ +/g)[0]
 	
-	//Need to create a help page
 	switch (command){
 		case 'help':
 			message.delete()
@@ -79,7 +78,6 @@ client.on("messageReactionAdd", (reaction, user) => {
 	hostPlayer.send(`${user} wants to play with you`).catch(err => console.log(err))
 })
 
-//Handles changing Tags, most of it is useless to us, last is important
 //Gets the users info, and the name of the tag to be toggled.
 function handleTags(member, tag) {
   const GUILD = client.guilds.find('id', SERVER_ID)

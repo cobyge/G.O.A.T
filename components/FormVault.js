@@ -13,7 +13,7 @@ import {
 import axios from 'axios'
 import { getToken } from '../utils/auth'
 
-var TAGS = []
+var ROLES = []
 var i = 0
 
 export default class TagsForm extends React.Component {
@@ -30,13 +30,13 @@ export default class TagsForm extends React.Component {
 
 
   componentDidMount() {
-//Gets a list of all the roles that the user currently has in the server.  Then it only takes the roles that are both in TAGS, and in the server, and it activates them on the webpage.  This way only Game-related roles will be shown (and activated) as opposed to all of the roles.
-    TAGS = this.props.taglist
+//Gets a list of all the roles that the user currently has in the server.  Then it only takes the roles that are both in ROLES, and in the server, and it activates them on the webpage.  This way only Game-related roles will be shown (and activated) as opposed to all of the roles.
+    ROLES = this.props.taglist
 	axios({
       method: 'GET',
       url: `/userTags/${this.props.userid}`
     }).then(({ data }) => {
-      this.setState({ tags: data.filter(i => (TAGS.includes(i)))})
+      this.setState({ tags: data.filter(i => (ROLES.includes(i)))})
       this.setState({ loading: false })
     }).catch(err => console.log(err))
   }
@@ -68,11 +68,12 @@ export default class TagsForm extends React.Component {
     return (
       <React.Fragment>
         <Form onSubmit={this.handleSubmit.bind(this)}>
-          <Segment
+          <Segment 
             style={{ margin: '50px' }}
             loading={this.state.loading}
             raised
-            inverted
+            inverted color='black'
+			secondary
           >
             <Form.Group unstackable>
                   <div>
@@ -96,7 +97,7 @@ export default class TagsForm extends React.Component {
         </Form>
         <style jsx global>{`
           .field label {
-            color: #1bff80 !important;
+            color: #ffffff !important;
           }
           .segment {
             padding: 20px !important;

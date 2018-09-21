@@ -14,10 +14,6 @@ export default class extends Document {
             rel="stylesheet"
             href="//cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.12/semantic.min.css"
           />
-          <link
-            href="https://use.fontawesome.com/releases/v5.0.8/css/all.css"
-            rel="stylesheet"
-          />
         </Head>
 
         <body>

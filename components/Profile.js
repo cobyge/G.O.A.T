@@ -19,7 +19,7 @@ export default class Profile extends React.Component {
             <Button
               animated
               size="mini"
-              color="black"
+              color="blue"
               style={{ marginTop: '10px' }}
               onClick={() => this.props.onLogout()}
             >

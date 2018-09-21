@@ -139,7 +139,7 @@ export default class Index extends React.Component {
           )) || (
           <div>
             <center>
-              <Image src="/static/goat.png" size="medium" />
+              <Image src="/static/coopport.png" size="medium" />
               <h1>
                 Hello fellow Discord user! <br /> Welcome to the server!
               </h1>
@@ -152,7 +152,7 @@ export default class Index extends React.Component {
                 href={`https://discordapp.com/api/oauth2/authorize?client_id=${CLIENT_ID}&redirect_uri=${SITE_URL}/callback&response_type=code&scope=identify%20guilds`}
               >
                 <Button
-                  color="green"
+                  color="blue"
                   className="loginBtn"
                   inverted
                   size="massive"
@@ -166,25 +166,25 @@ export default class Index extends React.Component {
         <style jsx global>
           {`
             @font-face {
-              font-family: pipboy;
-              src: url(./static/monofont.ttf);
+              font-family: 'IBM Plex Sans', sans-serif;
+              src: url(../static/IBMPlexSans-Regular.tff)
             }
-            ::selection,
-            ::-moz-selection {
-              background-color: #0bff80 !important;
-            }
+            ::selection{
+			  background-color: #0b67d6 !important;
+			  color: #ffffff
+			}
             body {
               display: flex;
-              background-color: #121212;
+              background-color: #23272A;
               justify-content: center;
-              color: #1bff80;
-              font-family: 'Roboto', sans-serif;
+              color: #ffffff;
+			  font-weight: 700;
               background-repeat: no-repeat;
               background-attachment: fixed;
-              font-family: pipboy;
+              font-family: 'IBM Plex Sans', sans-serif;
             }
             h1 {
-              font-family: pipboy;
+              font-family: 'IBM Plex Sans', sans-serif;
             }
             .container {
               padding: 10px;
@@ -200,16 +200,27 @@ export default class Index extends React.Component {
               display: flex; /* establish flex container */
               align-items: center; /* center items horizontally, in this case */
             }
-            .ui.inverted.green.button,
-            .ui.inverted.green.buttons .button {
-              background-color: transparent;
-              box-shadow: 0 0 0 2px #1bff80 inset !important;
-              color: #1bff80;
-              font-family: pipboy;
+            .ui.inverted.blue.button,
+            .ui.inverted.blue.buttons .button {
+              box-shadow: 0 0 0 2px #23272A inset !important;
+			  background-color: #7289DA;
+              color: #ffffff;
+              font-family: 'IBM Plex Sans', sans-serif;
             }
-            .ui.inverted.green.button:hover,
-            .ui.inverted.green.buttons .button:hover {
-              background-color: #1bff80;
+            .ui.inverted.blue.button:hover,
+            .ui.inverted.blue.buttons .button:hover {
+              background-color: #677bc4;
+            }
+			.ui.animated.blue.button,
+            .ui.animated.blue.buttons .button {
+              box-shadow: 0 0 0 2px #23272A inset !important;
+			  background-color: #7289DA;
+              color: #ffffff;
+              font-family: 'IBM Plex Sans', sans-serif;
+            }
+            .ui.animated.blue.button:hover,
+            .ui.animated.blue.buttons .button:hover {
+              background-color: #677bc4;
             }
           `}
         </style>

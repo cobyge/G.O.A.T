@@ -9,7 +9,6 @@ class index3 extends Component {
 		document.title = 'Auto-System - Home'
 		Router.push('/goat')
 		return
-		
 	  }
 	  render() {
 		return (

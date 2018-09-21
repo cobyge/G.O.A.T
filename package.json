@@ -6,8 +6,7 @@
   "scripts": {
     "dev": "backpack dev",
     "build": "next build && backpack build",
-    "start": "node build/main.js",
-    "deploy": "now scale GOAT.now.sh 0 && ping 127.0.0.1 -n 11 > nul && now --public && now alias rm GOAT.now.sh --yes && now alias && now scale GOAT.now.sh sfo1 1"
+    "start": "node build/main.js"
   },
   "keywords": [],
   "authors": [
