@@ -13,8 +13,9 @@ const CLIENT_SECRET = process.env.CLIENT_SECRET
 const token = process.env.CLIENT_TOKEN
 const DEFAULT_SERVER_ROLE = process.env.DEFAULT_SERVER_ROLE
 const CHANNEL_CATEGORY = process.env.CHANNEL_CATEGORY
-const BOT_COMMAND_CHANNEL = process.env.BOT_COMMAND_CHANNEL
+const BOT_COMMAND_CHANNEL_ID = process.env.BOT_COMMAND_CHANNEL_ID
 const prefix = process.env.BOT_COMMAND_PREFIX
+const BOT_POST_CHANNEL_ID = process.env.BOT_POST_CHANNEL_ID
 var TAGS = []
 
 client.on('ready', () => {
@@ -22,12 +23,9 @@ client.on('ready', () => {
   console.log(`> Bot Ready`)
 })
 
-
-
-//Creating game matcher here:
 client.on("message", (message) => {
 	//Only continue if message is meant for bot, and was not sent by a bot, and if it starts with the prefix, and is in the right channel
-	if (!(message.channel.name == BOT_COMMAND_CHANNEL) || (!message.content.startsWith(prefix))|| message.author.bot)return
+	if (!(message.channel.id == BOT_COMMAND_CHANNEL_ID || message.channel.id == '469849774326022164') || (!message.content.startsWith(prefix))|| message.author.bot)return
 	//Split message into command, and into args for command
 	const args = message.content.slice(prefix.length).trim().split(/ *,+ */g)
     const command = args.shift().toLowerCase().split(/ +/g)[0]
@@ -37,7 +35,7 @@ client.on("message", (message) => {
 			message.channel.send(`Hello ${message.author}! Please open your browser to the following site: ${process.env.SITE_URL}/`)
 			message.delete()
 			break
-			
+		
 		case 'help':
 			message.delete()
 			message.channel.send(`
@@ -54,34 +52,35 @@ When someone is looking for a game, you will be able to see a message from a bot
 			//Makes sure that the correct number of arguments are given, in the correct format
 			if (!(args[1] || (RegExp('\w+').test(args[0])))){message.channel.send('Forgot Arguments'); message.delete(); break}
 			if (!(RegExp('\\d+').test(args[1])) || args[1] == 0) {message.channel.send('How many players are you looking for?'); message.delete(); break}
+			var botPostChannel = client.guilds.get(SERVER_ID).channels.get(BOT_POST_CHANNEL_ID)
 			let [game, amountofplayers] = args
 			amountofplayers = amountofplayers.match(/\d+/g)[0].split(" ").slice(-1)[0].replace(/\D/g,'')
-			message.reply(`is looking for a game of ${game}.  ${message.author} needs another ${amountofplayers}.  Click on the reaction to join.`).then(message=>
-			message.react('✋'))
+			botPostChannel.send(`${message.author} is looking for a game of ${game}.  ${message.author} needs another ${amountofplayers}.  Click on the reaction to join.`).then(newMessage=>
+			newMessage.react('✋'))
 			message.delete()
 			break
 
-			default:
+		default:
 			message.delete()
 			message.channel.send("Command not found").catch(err => console.log(err))
 			break
 	}
 })
 
+
 client.on("messageReactionAdd", (reaction, user) => {
-	if (!(reaction.message.channel.name == BOT_COMMAND_CHANNEL) || reaction.emoji != '✋' || user == client.user)return
+	if (!(reaction.message.channel.id == BOT_POST_CHANNEL_ID) || reaction.emoji != '✋' || user == client.user || user == reaction.message.mentions.users.last())return
 	var currentPlayers = reaction.count - 1
 	var goalPlayers = reaction.message.edits.slice(-1)[0].content.match(/needs another[-0-9a-zA-Z \/_?:.,\s]*\d+/g)[0].split(" ").slice(-1)[0].replace(/\D/g,'')
 	var playersNeeded = goalPlayers - currentPlayers
-	var hostPlayer = reaction.message.mentions.users.last()
-	//When Game is full, edit message to show that the game is full.  Otherwise, edit it to reflect that.
+	var hostPlayer = reaction.message.mentions.users.last()	
+	//When Game is full, delete message to show that the game is full.  Otherwise, edit it to reflect that.
 	if (playersNeeded == 0){
-		reaction.message.clearReactions()
-		reaction.message.edit(`${hostPlayer} has found his players.`)
+		reaction.message.delete()
 	}
 	else {reaction.message.edit(`${reaction.message.edits.slice(-1)[0]} ${hostPlayer} has currently found ${currentPlayers}.  Need ${playersNeeded} more`)}
 	
-	//Handle users
+	//Let host know who wants to play.
 	hostPlayer.send(`${user} wants to play with you`).catch(err => console.log(err))
 })
 
@@ -168,7 +167,7 @@ nextApp.prepare().then(() => {
 
 //This refreshes the user token
   app.post('/refresh', (req, res) => {
-    axios({
+	axios({
       method: 'post',
       url: 'https://discordapp.com/api/oauth2/token',
       data: qs.stringify({
@@ -222,8 +221,7 @@ nextApp.prepare().then(() => {
     app.get('/serverChannels', (req, res) => {
     axios({
       method: 'GET',
-      url: `https://discordapp.com/api/v6/guilds/${SERVER_ID}/channels
-    `,
+      url: `https://discordapp.com/api/v6/guilds/${SERVER_ID}/channels`,
       headers: {
         Authorization: 'Bot ' + token
       }
@@ -234,7 +232,7 @@ nextApp.prepare().then(() => {
                 if (data.data[i]['name'] == CHANNEL_CATEGORY  && data.data[i]['type'] == 4){
                     for (j in data.data){
                         if (data.data[i]['id'] == data.data[j]['parent_id']){
-								TAGS.push(data.data[j]['name'].match(/\w+-*\w+/g)[0])
+								TAGS.push(data.data[j]['name'].match(/\w[\w-]+/g)[0])
 						}
                     }
                 }

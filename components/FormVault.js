@@ -60,9 +60,10 @@ export default class TagsForm extends React.Component {
       data: { tag: tag.value, token: getToken() }
     })
   }
-//Function to capitalize Labels
+//Function to capitalize and seperate by space Labels
   capitalize(str){
-  return str.charAt(0).toUpperCase() + str.slice(1)}
+	str = str.split('-').join(' ')
+	return str.charAt(0).toUpperCase() + str.slice(1)}
 //All of this controls the actual webpage content (After being logged in).  Need to change this to display my new TagCategories correctly.
   render() {
     return (
@@ -77,7 +78,6 @@ export default class TagsForm extends React.Component {
           >
             <Form.Group unstackable>
                   <div>
-                    <Form.Field>
                       {this.props.taglist.map(tag => {
                         return (
                           <Form.Field
@@ -90,7 +90,6 @@ export default class TagsForm extends React.Component {
                           />
                         )
                       })}
-                    </Form.Field>
                   </div>
             </Form.Group>
           </Segment>

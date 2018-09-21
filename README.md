@@ -44,7 +44,10 @@ And you'll be running in development mode.
 Browse to http://localhost:3000, and check it out.
 
 Deployment to Now:
-	Coming soon
-	Need to change package.json for that
+In package.json, under 'deploy', change 
+	
+	yarn deploy
+	
 	
 Add server icon
+

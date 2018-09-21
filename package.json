@@ -1,12 +1,13 @@
 {
-  "name": "g.o.a.t",
+  "name": "GameBot",
   "version": "1.1.0",
   "description": "",
   "main": "index.js",
   "scripts": {
     "dev": "backpack dev",
     "build": "next build && backpack build",
-    "start": "node build/main.js"
+    "start": "node build/main.js",
+	"deploy": "now"
   },
   "keywords": [],
   "authors": [
