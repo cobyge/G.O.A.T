@@ -18,24 +18,31 @@ const prefix = process.env.BOT_COMMAND_PREFIX
 var TAGS = []
 
 client.on('ready', () => {
+  client.user.setActivity(`${prefix}help`)
   console.log(`> Bot Ready`)
 })
 
+
+
 //Creating game matcher here:
 client.on("message", (message) => {
-	//Only continue if message is meant for bot, and was not sent by a bot.3
+	//Only continue if message is meant for bot, and was not sent by a bot, and if it starts with the prefix, and is in the right channel
 	if (!(message.channel.name == BOT_COMMAND_CHANNEL) || (!message.content.startsWith(prefix))|| message.author.bot)return
-	
 	//Split message into command, and into args for command
 	const args = message.content.slice(prefix.length).trim().split(/ *,+ */g)
     const command = args.shift().toLowerCase().split(/ +/g)[0]
 	
 	switch (command){
+		case 'setup':
+			message.channel.send(`Hello ${message.author}! Please open your browser to the following site: ${process.env.SITE_URL}/`)
+			message.delete()
+			break
+			
 		case 'help':
 			message.delete()
 			message.channel.send(`
 Finding games:
-The only current command is: !lookingforgame/!lfg:  This command will help you find people to play games with.  You can use this command, and tell it which game you are looking for, and how many more players you need.  The command looks like this: '!lfg, Monster Hunter: World, 3'.  This tells the bot that you are looking to play Monster Hunter World, and you are looking for 3 more people to play with.  Once 3 people join you, your post will be deleted, and you will get messages from the bot telling who wants to play with you.  Make sure to use commas to seperate the command, game, and number of players.
+The only current commands are: ${prefix}setup, and ${prefix}lookingforgame/${prefix}lfg:  This command will help you find people to play games with.  You can use this command, and tell it which game you are looking for, and how many more players you need.  The command looks like this: '${prefix}lfg, Monster Hunter: World, 3'.  This tells the bot that you are looking to play Monster Hunter World, and you are looking for 3 more people to play with.  Once 3 people join you, your post will be deleted, and you will get messages from the bot telling who wants to play with you.  Make sure to use commas to seperate the command, game, and number of players.
 
 Joining Games:
 When someone is looking for a game, you will be able to see a message from a bot, and a reaction under that.  When you click on the reaction, you will be added to the player count, and the bot will let the person looking know.
@@ -49,7 +56,7 @@ When someone is looking for a game, you will be able to see a message from a bot
 			if (!(RegExp('\\d+').test(args[1])) || args[1] == 0) {message.channel.send('How many players are you looking for?'); message.delete(); break}
 			let [game, amountofplayers] = args
 			amountofplayers = amountofplayers.match(/\d+/g)[0].split(" ").slice(-1)[0].replace(/\D/g,'')
-			message.reply(`is looking for a game of ${game}.  They need another ${amountofplayers}.  Click on the reaction to join.`).then(message=>
+			message.reply(`is looking for a game of ${game}.  ${message.author} needs another ${amountofplayers}.  Click on the reaction to join.`).then(message=>
 			message.react('✋'))
 			message.delete()
 			break
@@ -64,7 +71,7 @@ When someone is looking for a game, you will be able to see a message from a bot
 client.on("messageReactionAdd", (reaction, user) => {
 	if (!(reaction.message.channel.name == BOT_COMMAND_CHANNEL) || reaction.emoji != '✋' || user == client.user)return
 	var currentPlayers = reaction.count - 1
-	var goalPlayers = reaction.message.edits.slice(-1)[0].content.match(/need another[-0-9a-zA-Z \/_?:.,\s]*\d+/g)[0].split(" ").slice(-1)[0].replace(/\D/g,'')
+	var goalPlayers = reaction.message.edits.slice(-1)[0].content.match(/needs another[-0-9a-zA-Z \/_?:.,\s]*\d+/g)[0].split(" ").slice(-1)[0].replace(/\D/g,'')
 	var playersNeeded = goalPlayers - currentPlayers
 	var hostPlayer = reaction.message.mentions.users.last()
 	//When Game is full, edit message to show that the game is full.  Otherwise, edit it to reflect that.
@@ -72,7 +79,7 @@ client.on("messageReactionAdd", (reaction, user) => {
 		reaction.message.clearReactions()
 		reaction.message.edit(`${hostPlayer} has found his players.`)
 	}
-	else {reaction.message.edit(`${reaction.message.edits.slice(-1)[0]} ${hostPlayer} has currently found ${currentPlayers}.  Need ${playersNeeded}`)}
+	else {reaction.message.edit(`${reaction.message.edits.slice(-1)[0]} ${hostPlayer} has currently found ${currentPlayers}.  Need ${playersNeeded} more`)}
 	
 	//Handle users
 	hostPlayer.send(`${user} wants to play with you`).catch(err => console.log(err))

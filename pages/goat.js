@@ -166,8 +166,8 @@ export default class Index extends React.Component {
         <style jsx global>
           {`
             @font-face {
-              font-family: 'IBM Plex Sans', sans-serif;
-              src: url(../static/IBMPlexSans-Regular.tff)
+              font-family: 'Work Sans', sans-serif;
+              src: url(../static/WorkSans-Regular.tff)
             }
             ::selection{
 			  background-color: #0b67d6 !important;
@@ -181,10 +181,10 @@ export default class Index extends React.Component {
 			  font-weight: 700;
               background-repeat: no-repeat;
               background-attachment: fixed;
-              font-family: 'IBM Plex Sans', sans-serif;
+              font-family: 'Work Sans', sans-serif;
             }
             h1 {
-              font-family: 'IBM Plex Sans', sans-serif;
+              font-family: 'Work Sans', sans-serif;
             }
             .container {
               padding: 10px;
@@ -205,7 +205,7 @@ export default class Index extends React.Component {
               box-shadow: 0 0 0 2px #23272A inset !important;
 			  background-color: #7289DA;
               color: #ffffff;
-              font-family: 'IBM Plex Sans', sans-serif;
+              font-family: 'Work Sans', sans-serif;
             }
             .ui.inverted.blue.button:hover,
             .ui.inverted.blue.buttons .button:hover {
@@ -216,7 +216,7 @@ export default class Index extends React.Component {
               box-shadow: 0 0 0 2px #23272A inset !important;
 			  background-color: #7289DA;
               color: #ffffff;
-              font-family: 'IBM Plex Sans', sans-serif;
+              font-family: 'Work Sans', sans-serif;
             }
             .ui.animated.blue.button:hover,
             .ui.animated.blue.buttons .button:hover {
