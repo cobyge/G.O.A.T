@@ -25,15 +25,16 @@ client.on('ready', () => {
 
 client.on("message", (message) => {
 	//Only continue if message is meant for bot, and was not sent by a bot, and if it starts with the prefix, and is in the right channel
-	if (!(message.channel.id == BOT_COMMAND_CHANNEL_ID || message.channel.id == '469849774326022164') || (!message.content.startsWith(prefix))|| message.author.bot)return
+	if (!(message.channel.id == BOT_COMMAND_CHANNEL_ID) || (!message.content.startsWith(prefix))|| message.author.bot)return
 	//Split message into command, and into args for command
 	const args = message.content.slice(prefix.length).trim().split(/ *,+ */g)
     const command = args.shift().toLowerCase().split(/ +/g)[0]
 	
 	switch (command){
 		case 'setup':
-			message.channel.send(`Hello ${message.author}! Please open your browser to the following site: ${process.env.SITE_URL}/`)
 			message.delete()
+			message.channel.send(`Hello ${message.author}! Please open your browser to the following site: ${process.env.SITE_URL}/`).then(newMessage => 
+			newMessage.delete(20000))
 			break
 		
 		case 'help':
@@ -44,7 +45,7 @@ The only current commands are: ${prefix}setup, and ${prefix}lookingforgame/${pre
 
 Joining Games:
 When someone is looking for a game, you will be able to see a message from a bot, and a reaction under that.  When you click on the reaction, you will be added to the player count, and the bot will let the person looking know.
-			`).catch(err => console.log(err))
+			`).then(message => message.delete(20000)).catch(err => console.log(err))
 			break
 			
 		case 'lookingforgame':
@@ -62,7 +63,7 @@ When someone is looking for a game, you will be able to see a message from a bot
 
 		default:
 			message.delete()
-			message.channel.send("Command not found").catch(err => console.log(err))
+			message.channel.send("Command not found").then(message => message.delete(20000)).catch(err => console.log(err))
 			break
 	}
 })
@@ -74,6 +75,8 @@ client.on("messageReactionAdd", (reaction, user) => {
 	var goalPlayers = reaction.message.edits.slice(-1)[0].content.match(/needs another[-0-9a-zA-Z \/_?:.,\s]*\d+/g)[0].split(" ").slice(-1)[0].replace(/\D/g,'')
 	var playersNeeded = goalPlayers - currentPlayers
 	var hostPlayer = reaction.message.mentions.users.last()	
+	console.log('Need ',playersNeeded)
+	console.log('Have ', currentPlayers)
 	//When Game is full, delete message to show that the game is full.  Otherwise, edit it to reflect that.
 	if (playersNeeded == 0){
 		reaction.message.delete()

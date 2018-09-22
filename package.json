@@ -1,13 +1,13 @@
 {
   "name": "GameBot",
-  "version": "1.1.0",
+  "version": "2.0",
   "description": "",
   "main": "index.js",
   "scripts": {
     "dev": "backpack dev",
     "build": "next build && backpack build",
     "start": "node build/main.js",
-	"deploy": "now"
+	"deploy": "now --public && now alias"
   },
   "keywords": [],
   "authors": [

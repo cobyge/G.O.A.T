@@ -134,8 +134,9 @@ export default class Index extends React.Component {
                   userid={this.state.user.id}
 				  taglist={TAGS.sort()}
                 />
-              )) || <h1>You are not a member of this wiki</h1>}
-            </React.Fragment>
+              )) ||			  
+			  <h1>You are not a member of this Discord server.  Please go to <a href="https://discordapp.com">Discord</a> and log into the account connected to the Discord server</h1>}
+			</React.Fragment>
           )) || (
           <div>
             <center>
