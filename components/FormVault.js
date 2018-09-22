@@ -13,7 +13,7 @@ import {
 import axios from 'axios'
 import { getToken } from '../utils/auth'
 
-var ROLES = []
+var TAGS = []
 var i = 0
 
 export default class TagsForm extends React.Component {
@@ -24,26 +24,17 @@ export default class TagsForm extends React.Component {
       error: false,
       sent: false,
       tags: [],
-      loading: true
+      loading: false
     }
   }
 
 
-  componentDidMount() {
-//Gets a list of all the roles that the user currently has in the server.  Then it only takes the roles that are both in ROLES, and in the server, and it activates them on the webpage.  This way only Game-related roles will be shown (and activated) as opposed to all of the roles.
-    ROLES = this.props.taglist
-	axios({
-      method: 'GET',
-      url: `/userTags/${this.props.userid}`
-    }).then(({ data }) => {
-      this.setState({ tags: data.filter(i => (ROLES.includes(i)))})
-      this.setState({ loading: false })
-    }).catch(err => console.log(err))
+  componentDidMount() { 
+
   }
+    
   handleSubmit(e) {}
-  handleClose() {
-    location.reload()
-  }
+  handleClose() {location.reload()}
 //When a box is clicked, if the box was empty, checks the box just clicked.  Otherwise (if the box was selected), it unchecks the box.  It then calls handleTags, which is explained in the code in index.js where the function is defined.
   handleChange = (answ, tag) => {
     if (!this.state.tags.includes(tag.value))
@@ -64,9 +55,27 @@ export default class TagsForm extends React.Component {
   capitalize(str){
 	str = str.split('-').join(' ')
 	return str.charAt(0).toUpperCase() + str.slice(1)}
-//All of this controls the actual webpage content (After being logged in).  Need to change this to display my new TagCategories correctly.
+//All of this controls the actual webpage content.
   render() {
-    return (
+	
+//This compares a list of roles the user currently has, with the available options (From the category), and selects the checkboxes a member has.  Also gets the list of channels to display.
+	axios({
+		method: 'GET',
+		url: `/serverChannels`}).then(function(response){
+		TAGS = []
+		for (i in response.data){
+			TAGS.push(response.data[i])
+		}
+	}).catch(err => console.log(err)).then(
+	axios({
+		method: 'GET',
+		url: `/userTags/${this.props.userid}`
+		}).then(({ data }) => {
+			this.setState({ tags: data.filter(i => (TAGS.includes(i)))})
+			this.setState({ loading: false })
+		}).catch(err => console.log(err)))
+			
+	return (
       <React.Fragment>
         <Form onSubmit={this.handleSubmit.bind(this)}>
           <Segment 
@@ -78,7 +87,7 @@ export default class TagsForm extends React.Component {
           >
             <Form.Group unstackable>
                   <div>
-                      {this.props.taglist.map(tag => {
+                      {TAGS.sort().map(tag => {
                         return (
                           <Form.Field
                             control={Checkbox}

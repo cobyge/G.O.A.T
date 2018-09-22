@@ -51,3 +51,5 @@ In package.json, under 'deploy', change
 	
 Add server icon
 
+Add option for Range of players
+Delete game message after 1 hour

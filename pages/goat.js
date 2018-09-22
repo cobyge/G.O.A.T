@@ -28,7 +28,6 @@ function getUrlParams(search) {
   }, {})
 }
    
-    
 export default class Index extends React.Component {
   constructor() {
     super()
@@ -38,9 +37,9 @@ export default class Index extends React.Component {
       loading: true
     }
   }
-//Check if logged in, if logged in, loadInfo, otherwise get info then loadInfo
+  
   componentDidMount() {
-    document.title = 'Auto-System'
+	document.title = 'Auto-System'
     const { code, refresh } = getUrlParams(window.location.search)
     const token = getToken()
     if (code && refresh) {
@@ -81,17 +80,17 @@ export default class Index extends React.Component {
 		  }
         })
       })
-      .catch(err => console.log(err))
-	  
-//Gets list of channels in specific category in Server.
-  axios({
-    method: 'GET',
-    url: `/serverChannels`}).then(function(response){
-      TAGS = []
-	  for (i in response.data){
-		TAGS.push(response.data[i])
-	  }
-    }).catch(err => console.log(err)) 
+	  .catch(err => console.log(err))
+
+	  //Gets list of channels in specific category in Server.
+	  axios({
+		method: 'GET',
+		url: `/serverChannels`}).then(function(response){
+		TAGS = []
+		for (i in response.data){
+			TAGS.push(response.data[i])
+		}
+	}).catch(err => console.log(err))
   }
   onLogout() {
     logout()
@@ -108,6 +107,7 @@ export default class Index extends React.Component {
 	}
 
 	render() {
+	//Gets list of channels in specific category in Server.
     if (this.state.loading) {
       return (
         <Dimmer active>
@@ -132,7 +132,6 @@ export default class Index extends React.Component {
               {(this.state.member && (
                 <Form
                   userid={this.state.user.id}
-				  taglist={TAGS.sort()}
                 />
               )) ||			  
 			  <h1>You are not a member of this Discord server.  Please go to <a href="https://discordapp.com">Discord</a> and log into the account connected to the Discord server</h1>}

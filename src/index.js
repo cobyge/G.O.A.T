@@ -51,7 +51,7 @@ When someone is looking for a game, you will be able to see a message from a bot
 		case 'lookingforgame':
 		case 'lfg':
 			//Makes sure that the correct number of arguments are given, in the correct format
-			if (!(args[1] || (RegExp('\w+').test(args[0])))){message.channel.send('Forgot Arguments'); message.delete(); break}
+			if (!(args[1] || (RegExp('\w+').test(args[0])))){message.channel.send('Forgot Arguments').then(newMessage => newMessage.delete(20000)); message.delete(); break}
 			if (!(RegExp('\\d+').test(args[1])) || args[1] == 0) {message.channel.send('How many players are you looking for?'); message.delete(); break}
 			var botPostChannel = client.guilds.get(SERVER_ID).channels.get(BOT_POST_CHANNEL_ID)
 			let [game, amountofplayers] = args
@@ -206,13 +206,13 @@ nextApp.prepare().then(() => {
           Authorization: 'Bot ' + token
         }
       }).then(({ data }) => {
-        let tags = []
+        let roles = []
         for (let tag of data.roles) {
-          tags.push(
+          roles.push(
             client.guilds.find('id', SERVER_ID).roles.find('id', tag).name
           )
         }
-        res.send(tags)
+        res.send(roles)
       }).catch(err => res.send('error'))
     } else {
       res.send(req.body)
