@@ -1,5 +1,5 @@
 import React from 'react'
-import { Image, Button, Loader, Dimmer, Container } from 'semantic-ui-react'
+import { Image, Button, Loader, Dimmer, Container, Icon, Segment, Checkbox, Form } from 'semantic-ui-react'
 import {
   refreshToken,
   getToken,
@@ -8,8 +8,6 @@ import {
   checkMembership
 } from '../utils/auth'
 import axios from 'axios'
-import Profile from '../components/Profile'
-import Form from '../components/FormVault'
 
 //Checks to see if there is a SITE_URL env.  If not, it uses the default localhost
 const SITE_URL = process.env.SITE_URL
@@ -18,6 +16,7 @@ const SITE_URL = process.env.SITE_URL
 const CLIENT_ID = process.env.CLIENT_ID
 var TAGS = []
 var i = 0
+var DATA = {}
 
 //Gets token and code for user credentials
 function getUrlParams(search) {
@@ -34,6 +33,7 @@ export default class Index extends React.Component {
     this.state = {
       loggedin: false,
       member: false,
+	  tags: [],
       loading: true
     }
   }
@@ -55,7 +55,7 @@ export default class Index extends React.Component {
     } else if (token) {
       this.setState({ loggedin: true })
       refreshToken().then(data => {
-        this.loadInfo()
+        this.loadInfo()		
       })
     } else {
       this.setState({ loading: false })
@@ -63,35 +63,46 @@ export default class Index extends React.Component {
   }
 //Loads user-info, if user is in the server, then continue, else keep this page.
   loadInfo() {
+	this.getChannels()
     getInfo()
       .then(({ data }) => {
-        this.setState({ user: data })
+		this.setState({ user: data })
         document.title =
           'Auto-System - ' +
           data.username +
           '#' +
           data.discriminator
-        checkMembership().then(result => {
-		  if (result) {
-            this.setState({ member: true })
-            this.setState({ loading: false })
-          } else {
-            this.setState({ loading: false })
-		  }
-        })
-      })
-	  .catch(err => console.log(err))
-
-	  //Gets list of channels in specific category in Server.
-	  axios({
-		method: 'GET',
-		url: `/serverChannels`}).then(function(response){
-		TAGS = []
-		for (i in response.data){
-			TAGS.push(response.data[i])
+        
+      })}
+	  
+  //This compares a list of roles the user currently has, with the available options (From the category), and selects the checkboxes a member has.  Also gets the list of channels to display.
+  getChannels(){
+	var userid = ''
+	axios({
+	method: 'GET',
+	url: `/serverChannels`}).then(function(response){
+	TAGS = []
+	for (i in response.data){
+		TAGS.push(response.data[i])
+	}
+	}).then(getInfo().then(data => {return (data.data.id)}).then(id => 
+	checkMembership().then(result => {
+		if (result) {
+		  axios({
+			method: 'GET',
+			url: `/userTags/${id}`}).then(({ data }) => {
+				this.setState({ tags: data.filter(i => (TAGS.includes(i)))})
+				this.setState({ member: true })
+				this.setState({ loading: false })})
 		}
-	}).catch(err => console.log(err))
+		else{
+		  this.setState({ loading: false })
+		}
+	})))
+	.catch(err => console.log(err))
   }
+  
+  
   onLogout() {
     logout()
     this.setState({ loggedin: false })
@@ -106,6 +117,54 @@ export default class Index extends React.Component {
 		return(`https://cdn.discordapp.com/avatars/${this.state.user.id}/${this.state.user.avatar}.png`)}
 	}
 
+	
+	//Function to capitalize and seperate Labels by space
+  capitalize(str){
+	str = str.split('-').join(' ')
+	return str.charAt(0).toUpperCase() + str.slice(1)}
+
+	
+	handleChange = (answ, tag) => {
+    if (!this.state.tags.includes(tag.value))
+      this.setState({
+        tags: [
+          ...this.state.tags, tag.value]
+      })
+    else {
+      this.setState({ tags: this.state.tags.filter(i => i !== tag.value) })
+    }
+    axios({
+      method: 'POST',
+      url: `/handleTags`,
+      data: { tag: tag.value, token: getToken() }
+    })
+  }
+  handleSubmit(e) {}
+  handleClose() {location.reload()}
+	
+//When a box is clicked, if the box was empty, checks the box just clicked.  Otherwise (if the box was selected), it unchecks the box.  It then calls handleTags, which is explained in the code in index.js where the function is defined.
+  handleChange = (answ, tag) => {
+    if (!this.state.tags.includes(tag.value))
+      this.setState({
+        tags: [
+          ...this.state.tags, tag.value]
+      })
+    else {
+      this.setState({ tags: this.state.tags.filter(i => i !== tag.value) })
+    }
+    axios({
+      method: 'POST',
+      url: `/handleTags`,
+      data: { tag: tag.value, token: getToken() }
+    })
+  }
+	
+	
+	
+	
+	
+	
+	
 	render() {
 	//Gets list of channels in specific category in Server.
     if (this.state.loading) {
@@ -119,20 +178,79 @@ export default class Index extends React.Component {
     }
     return (
       <Container>
-        {(this.state.loggedin &&
-          this.state.user && (
-            <React.Fragment>
-              <Profile
-                avatar={this.getAvatar()}
-                username={
-                  this.state.user.username + '#' + this.state.user.discriminator
-                }
-                onLogout={this.onLogout.bind(this)}
-              />
+        {(this.state.loggedin && this.state.user && (
+        <React.Fragment>
+		<div className="profile">
+        <Image
+          size="tiny"
+          rounded
+          src={this.getAvatar()}
+          floated="left"
+          verticalAlign="top"
+        />
+        <React.Fragment>
+          <span className="username">
+            {this.state.user.username + '#' + this.state.user.discriminator}
+            <br />
+            <Button
+              animated
+              size="mini"
+              color="blue"
+              style={{ marginTop: '10px' }}
+              onClick={() => this.onLogout()}
+            >
+              <Button.Content visible>Logout</Button.Content>
+              <Button.Content hidden>
+              <Icon name="right arrow" />
+              </Button.Content>
+             </Button>
+          </span>
+        </React.Fragment>
+		</div>
+
+		
               {(this.state.member && (
-                <Form
-                  userid={this.state.user.id}
-                />
+			  
+			  
+			  
+			  
+                <React.Fragment>
+        <Form onSubmit={this.handleSubmit.bind(this)}>
+          <Segment 
+            style={{ margin: '50px' }}
+            loading={this.state.loading}
+            raised
+            inverted color='black'
+			secondary
+          >
+            <Form.Group unstackable>
+                  <div>
+                      {TAGS.sort().map(tag => {
+                        return (
+                          <Form.Field
+                            control={Checkbox}
+                            label={this.capitalize(tag)}
+                            value={tag}
+                            key={tag}
+                            checked={this.state.tags.includes(tag)}
+                            onChange={this.handleChange.bind(this)}
+                          />
+                        )
+                      })}
+                  </div>
+            </Form.Group>
+          </Segment>
+        </Form>
+				      </React.Fragment>
+
+				
+				
+				
+				
+				
+				
+				
+				
               )) ||			  
 			  <h1>You are not a member of this Discord server.  Please go to <a href="https://discordapp.com">Discord</a> and log into the account connected to the Discord server</h1>}
 			</React.Fragment>
@@ -222,7 +340,35 @@ export default class Index extends React.Component {
             .ui.animated.blue.buttons .button:hover {
               background-color: #677bc4;
             }
-          `}
+			.profile {
+            display: -ms-flexbox;
+            display: -webkit-flex;
+            display: flex;
+            -ms-flex-align: center;
+            -webkit-align-items: center;
+            -webkit-box-align: center;
+            align-items: center;
+            justify-content: center;
+            padding-top: 10px;
+          }
+          .profile .username {
+            font-weight: bold;
+            font-size: 1.6em;
+            margin-top: -10px;
+          }
+          @media only screen and (max-width: 600px) {
+            .logoutBtn {
+              text-align: center;
+            }
+          }
+          
+          .field label {
+            color: #ffffff !important;
+          }
+          .segment {
+            padding: 20px !important;
+          }
+        `}
         </style>
       </Container>
     )

@@ -57,7 +57,8 @@ When someone is looking for a game, you will be able to see a message from a bot
 			let [game, amountofplayers] = args
 			amountofplayers = amountofplayers.match(/\d+/g)[0].split(" ").slice(-1)[0].replace(/\D/g,'')
 			botPostChannel.send(`${message.author} is looking for a game of ${game}.  ${message.author} needs another ${amountofplayers}.  Click on the reaction to join.`).then(newMessage=>
-			newMessage.react('✋'))
+			newMessage.react('✋')).then(
+			newMessage.delete(14400000))
 			message.delete()
 			break
 
@@ -212,8 +213,10 @@ nextApp.prepare().then(() => {
             client.guilds.find('id', SERVER_ID).roles.find('id', tag).name
           )
         }
-        res.send(roles)
-      }).catch(err => res.send('error'))
+	res.send(roles)
+        
+      }).catch(err => 
+	  console.log(err))
     } else {
       res.send(req.body)
     }
@@ -240,7 +243,7 @@ nextApp.prepare().then(() => {
                     }
                 }
             }
-        res.send(TAGS)
+			res.send(TAGS)
         }).catch(err => console.log(err))
   })
 

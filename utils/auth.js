@@ -1,6 +1,6 @@
 import axios from 'axios'
-
 const SERVER_ID = process.env.SERVER_ID
+
 export function setToken(token, refresh) {
   localStorage.setItem('token', token)
   localStorage.setItem('refresh', refresh)
