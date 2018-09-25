@@ -9,7 +9,7 @@ https://discordapp.com/oauth2/authorize?client_id=CLIENTID&scope=bot  (Replace C
 
 Go to that link, and add the bot to your server (You must have Manage Server or Admin permissions)
 
-In the OAuth2 tab, add a redirect, and put in "http://localhost/callback", as well as the link you are going to deploy to + /callback (e.g "https://mydeploymentwebsite.now.sh/callback")
+In the OAuth2 tab, add a redirect, and put in "http://localhost:3000/callback", as well as the link you are going to deploy to + /callback (e.g "https://mydeploymentwebsite.now.sh/callback")
 
 Make a file named .env (You can copy from .env.example) and put it in the project root. The format should be as follows, # comments are allowed:
 
@@ -21,7 +21,7 @@ Make a file named .env (You can copy from .env.example) and put it in the projec
     CLIENT_SECRET=
     #Client Token from Discord Developer page
     CLIENT_TOKEN=
-	#Name of category containing all games.  Category names are shown capitalized in Discord regardless of actual capitalization, so I reccommend naming your channel in all caps for simplicity
+	#Name of category containing all games.  Category names are shown capitalized in Discord regardless of actual capitalization, so I recommend naming your channel in all caps for simplicity
 	CHANNEL_CATEGORY=CATEGORY123
 	#Channel for bot commands.  Bot will only work in this channel.
 	BOT_COMMAND_CHANNEL=
@@ -44,13 +44,12 @@ And you'll be running in development mode.
 Browse to http://localhost:3000, and check it out.
 
 Deployment to Now:
-In package.json, under 'deploy', change 
-	
+Rename now.example.json to now.json, under 'alias', change it to whatever you would like to deploy your website to.
+Then run:
 	yarn deploy
+
+And it will automatically upload to Now, and the link to your website will be *InsertAliasHere*.now.sh
 	
-	
-Add server icon
 
 Add option for Range of players
-Delete game message after 1 hour
-Move Axios code in FormVault
+Make BOT_POST_CHANNEL_ID optional (Post in the same channel as recieved messages)
