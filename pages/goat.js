@@ -93,12 +93,13 @@ export default class Index extends React.Component {
 			url: `/userTags/${id}`}).then(({ data }) => {
 				this.setState({ tags: data.filter(i => (TAGS.includes(i)))})
 				this.setState({ member: true })
-				this.setState({ loading: false })})
+				this.setState({ loading: false })}).catch(err => console.log(err))
 		}
 		else{
 		  this.setState({ loading: false })
 		}
-	})))
+	}).catch(err => console.log(err))
+	).catch(err => console.log(err)))
 	.catch(err => console.log(err))
   }
   
@@ -123,22 +124,6 @@ export default class Index extends React.Component {
 	str = str.split('-').join(' ')
 	return str.charAt(0).toUpperCase() + str.slice(1)}
 
-	
-	handleChange = (answ, tag) => {
-    if (!this.state.tags.includes(tag.value))
-      this.setState({
-        tags: [
-          ...this.state.tags, tag.value]
-      })
-    else {
-      this.setState({ tags: this.state.tags.filter(i => i !== tag.value) })
-    }
-    axios({
-      method: 'POST',
-      url: `/handleTags`,
-      data: { tag: tag.value, token: getToken() }
-    })
-  }
   handleSubmit(e) {}
   handleClose() {location.reload()}
 	

@@ -7,6 +7,7 @@ import next from 'next'
 require('dotenv').config()
 
 const client = new Discord.Client()
+
 const SERVER_ID = process.env.SERVER_ID
 const CLIENT_ID = process.env.CLIENT_ID
 const CLIENT_SECRET = process.env.CLIENT_SECRET
@@ -16,7 +17,9 @@ const CHANNEL_CATEGORY = process.env.CHANNEL_CATEGORY
 const BOT_COMMAND_CHANNEL_ID = process.env.BOT_COMMAND_CHANNEL_ID
 const prefix = process.env.BOT_COMMAND_PREFIX
 const BOT_POST_CHANNEL_ID = process.env.BOT_POST_CHANNEL_ID
+const LOG_CHANNEL_ID = process.env.LOG_CHANNEL_ID
 var TAGS = []
+
 
 client.on('ready', () => {
   client.user.setActivity(`${prefix}help`)
@@ -56,9 +59,9 @@ When someone is looking for a game, you will be able to see a message from a bot
 			var botPostChannel = client.guilds.get(SERVER_ID).channels.get(BOT_POST_CHANNEL_ID)
 			let [game, amountofplayers] = args
 			amountofplayers = amountofplayers.match(/\d+/g)[0].split(" ").slice(-1)[0].replace(/\D/g,'')
-			botPostChannel.send(`${message.author} is looking for a game of ${game}.  ${message.author} needs another ${amountofplayers}.  Click on the reaction to join.`).then(newMessage=>
-			newMessage.react('✋')).then(
-			newMessage.delete(14400000))
+			botPostChannel.send(`${message.author} is looking for a game of ${game}.  ${message.author} needs another ${amountofplayers}.  Click on the reaction to join.`).then(newMessage=>{
+			newMessage.react('✋')
+			newMessage.delete(14400000)}).catch(err => console.log(err))
 			message.delete()
 			break
 
@@ -214,7 +217,7 @@ nextApp.prepare().then(() => {
           )
         }
 	res.send(roles)
-        
+	if (LOG_CHANNEL_ID){client.channels.get(LOG_CHANNEL_ID).send(`${client.guilds.get(SERVER_ID).members.get(data.user.id).user} is visiting the webpage`)}
       }).catch(err => 
 	  console.log(err))
     } else {
