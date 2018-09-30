@@ -12,83 +12,110 @@ const SERVER_ID = process.env.SERVER_ID
 const CLIENT_ID = process.env.CLIENT_ID
 const CLIENT_SECRET = process.env.CLIENT_SECRET
 const token = process.env.CLIENT_TOKEN
+const SITE_URL = process.env.SITE_URL
 const DEFAULT_SERVER_ROLE = process.env.DEFAULT_SERVER_ROLE
-const CHANNEL_CATEGORY = process.env.CHANNEL_CATEGORY
+const CHANNEL_CATEGORY_ID = process.env.CHANNEL_CATEGORY_ID
 const BOT_COMMAND_CHANNEL_ID = process.env.BOT_COMMAND_CHANNEL_ID
-const prefix = process.env.BOT_COMMAND_PREFIX
 const BOT_POST_CHANNEL_ID = process.env.BOT_POST_CHANNEL_ID
+const ADMIN_COMMAND_CHANNEL_ID = process.env.ADMIN_COMMAND_CHANNEL_ID
 const LOG_CHANNEL_ID = process.env.LOG_CHANNEL_ID
-var TAGS = []
-
+const prefix = process.env.BOT_COMMAND_PREFIX
+const ADMIN_ROLE_NAME = process.env.ADMIN_ROLE_NAME
+var server
+var adminRole
+var TAGS =[]
 
 client.on('ready', () => {
   client.user.setActivity(`${prefix}help`)
   console.log(`> Bot Ready`)
+  server = client.guilds.get(SERVER_ID)
+  adminRole = server.roles.find('name', ADMIN_ROLE_NAME)
 })
 
 client.on("message", (message) => {
-	//Only continue if message is meant for bot, and was not sent by a bot, and if it starts with the prefix, and is in the right channel
-	if (!(message.channel.id == BOT_COMMAND_CHANNEL_ID) || (!message.content.startsWith(prefix))|| message.author.bot)return
-	//Split message into command, and into args for command
-	const args = message.content.slice(prefix.length).trim().split(/ *,+ */g)
+    //Only continue if message is meant for bot, and was not sent by a bot, and if it starts with the prefix, and is in the right channel
+    if (!(message.channel.id == BOT_COMMAND_CHANNEL_ID || message.channel.id == ADMIN_COMMAND_CHANNEL_ID) || (!message.content.startsWith(prefix))|| message.author.bot)return
+    //Split message into command, and into args for command
+    const args = message.content.slice(prefix.length).trim().split(/ *,+ */g)
     const command = args.shift().toLowerCase().split(/ +/g)[0]
-	
-	switch (command){
-		case 'setup':
-			message.delete()
-			message.channel.send(`Hello ${message.author}! Please open your browser to the following site: ${process.env.SITE_URL}/`).then(newMessage => 
-			newMessage.delete(20000))
-			break
-		
-		case 'help':
-			message.delete()
-			message.channel.send(`
+
+    switch (command){
+        case 'setup':
+            message.delete()
+            message.channel.send(`Hello ${message.author}! Please open your browser to the following site: ${process.env.SITE_URL}/`).then(newMessage =>
+            newMessage.delete(60000))
+            break
+
+        case 'help':
+            message.delete()
+            message.channel.send(`
 Finding games:
 The only current commands are: ${prefix}setup, and ${prefix}lookingforgame/${prefix}lfg:  This command will help you find people to play games with.  You can use this command, and tell it which game you are looking for, and how many more players you need.  The command looks like this: '${prefix}lfg, Monster Hunter: World, 3'.  This tells the bot that you are looking to play Monster Hunter World, and you are looking for 3 more people to play with.  Once 3 people join you, your post will be deleted, and you will get messages from the bot telling who wants to play with you.  Make sure to use commas to seperate the command, game, and number of players.
 
 Joining Games:
 When someone is looking for a game, you will be able to see a message from a bot, and a reaction under that.  When you click on the reaction, you will be added to the player count, and the bot will let the person looking know.
-			`).then(message => message.delete(20000)).catch(err => console.log(err))
-			break
-			
-		case 'lookingforgame':
-		case 'lfg':
-			//Makes sure that the correct number of arguments are given, in the correct format
-			if (!(args[1] || (RegExp('\w+').test(args[0])))){message.channel.send('Forgot Arguments').then(newMessage => newMessage.delete(20000)); message.delete(); break}
-			if (!(RegExp('\\d+').test(args[1])) || args[1] == 0) {message.channel.send('How many players are you looking for?'); message.delete(); break}
-			var botPostChannel = client.guilds.get(SERVER_ID).channels.get(BOT_POST_CHANNEL_ID)
-			let [game, amountofplayers] = args
-			amountofplayers = amountofplayers.match(/\d+/g)[0].split(" ").slice(-1)[0].replace(/\D/g,'')
-			botPostChannel.send(`${message.author} is looking for a game of ${game}.  ${message.author} needs another ${amountofplayers}.  Click on the reaction to join.`).then(newMessage=>{
-			newMessage.react('✋')
-			newMessage.delete(14400000)}).catch(err => console.log(err))
-			message.delete()
-			break
+            `).then(message => message.delete(60000)).catch(err => console.log(err))
+            break
 
-		default:
-			message.delete()
-			message.channel.send("Command not found").then(message => message.delete(20000)).catch(err => console.log(err))
+        case 'lookingforgame':
+        case 'lfg':
+            //Makes sure that the correct number of arguments are given, in the correct format
+            if (!(args[1] || (RegExp('\w+').test(args[0])))){message.channel.send('Forgot Arguments').then(newMessage => newMessage.delete(20000)); message.delete(); break}
+            if (!(RegExp('\\d+').test(args[1])) || args[1] == 0) {message.channel.send('How many players are you looking for?'); message.delete(); break}
+            let [game, amountofplayers] = args
+            amountofplayers = amountofplayers.match(/\d+/g)[0].split(" ").slice(-1)[0].replace(/\D/g,'')
+            server.channels.get(BOT_POST_CHANNEL_ID).send(`${message.author} is looking for a game of ${game}.  ${message.author} needs another ${amountofplayers}.  Click on the reaction to join.`).then(newMessage=>{
+            newMessage.react('✋')
+            newMessage.delete(14400000)}).catch(err => console.log(err))
+            message.delete()
+            break
+
+		//Server-specific command for our server
+		case 'roles':
+			if (message.channel.id == ADMIN_COMMAND_CHANNEL_ID){
+				message.delete()
+				//Recommend order.
+				let roleList = []
+				let roleNumber = []
+				server.roles.forEach(role => {
+					if (role.name.includes('Beard')){
+						roleList.push(role.name.padEnd(45 - role.members.size.toString().length, ' ') + role.members.size)
+						roleNumber.push(role.members.size)
+					}
+				})
+				roleList.sort((a, b) => {
+					return (parseInt(a.slice(42)) - parseInt(b.slice(42)))
+				})
+				console.log(roleList)
+				message.channel.send(`Sorted from least to most\n\`\`\`${roleList.join('\n')}\`\`\``)
+			}
 			break
-	}
+		
+		
+        default:
+            message.delete()
+            message.channel.send("Command not found").then(newMessage => newMessage.delete(20000)).catch(err => console.log(err))
+            break
+    }
 })
 
 
 client.on("messageReactionAdd", (reaction, user) => {
-	if (!(reaction.message.channel.id == BOT_POST_CHANNEL_ID) || reaction.emoji != '✋' || user == client.user || user == reaction.message.mentions.users.last())return
-	var currentPlayers = reaction.count - 1
-	var goalPlayers = reaction.message.edits.slice(-1)[0].content.match(/needs another[-0-9a-zA-Z \/_?:.,\s]*\d+/g)[0].split(" ").slice(-1)[0].replace(/\D/g,'')
-	var playersNeeded = goalPlayers - currentPlayers
-	var hostPlayer = reaction.message.mentions.users.last()	
-	console.log('Need ',playersNeeded)
-	console.log('Have ', currentPlayers)
-	//When Game is full, delete message to show that the game is full.  Otherwise, edit it to reflect that.
-	if (playersNeeded == 0){
-		reaction.message.delete()
-	}
-	else {reaction.message.edit(`${reaction.message.edits.slice(-1)[0]} ${hostPlayer} has currently found ${currentPlayers}.  Need ${playersNeeded} more`)}
-	
-	//Let host know who wants to play.
-	hostPlayer.send(`${user} wants to play with you`).catch(err => console.log(err))
+    if (!(reaction.message.channel.id == BOT_POST_CHANNEL_ID) || reaction.emoji != '✋' || user == client.user || user == reaction.message.mentions.users.last())return
+    var currentPlayers = reaction.count - 1
+    var goalPlayers = reaction.message.edits.slice(-1)[0].content.match(/needs another[-0-9a-zA-Z \/_?:.,\s]*\d+/g)[0].split(" ").slice(-1)[0].replace(/\D/g,'')
+    var playersNeeded = goalPlayers - currentPlayers
+    var hostPlayer = reaction.message.mentions.users.last()
+    console.log('Need ',playersNeeded)
+    console.log('Have ', currentPlayers)
+    //When Game is full, delete message to show that the game is full.  Otherwise, edit it to reflect that.
+    if (playersNeeded == 0){
+        reaction.message.delete()
+    }
+    else {reaction.message.edit(`${reaction.message.edits.slice(-1)[0]} ${hostPlayer} has currently found ${currentPlayers}.  Need ${playersNeeded} more`)}
+
+    //Let host know who wants to play.
+    hostPlayer.send(`${user} wants to play with you`).catch(err => console.log(err))
 })
 
 //Gets the users info, and the name of the tag to be toggled.
@@ -96,19 +123,6 @@ function handleTags(member, tag) {
   const GUILD = client.guilds.find('id', SERVER_ID)
   if (TAGS.includes(tag)) {
     let userTags = member.roles.filterArray(i => TAGS.includes(i.name))
-    //Next 3 lines remove all roles except age if someone clicked 'Not Specified'
-    if (tag === 'Not Specified') {
-      for (let tag of userTags) {
-        member.removeRole(GUILD.roles.find('name', tag.name).id)
-      }
-      //This line adds the 'Not specified' role to those who ask
-      member.addRole(GUILD.roles.find('name', 'Not Specified').id)
-      return
-    }    
-    //If the member has 'Not Specified' role, it removes it.
-    if (member.roles.find('name', 'Not Specified')) {
-      member.removeRole(GUILD.roles.find('name', 'Not Specified').id)
-    }
     //If the tag == a role that the user currently has, remove it.  Otherwise, add it.
     if (member.roles.find('name', tag)) {
       member.removeRole(GUILD.roles.find('name', tag).id)
@@ -167,6 +181,8 @@ nextApp.prepare().then(() => {
         )
       })
       .catch(err => {
+        if (LOG_CHANNEL_ID){
+            client.channels.get(LOG_CHANNEL_ID).send(`${adminRole}, error in /callback request.`)}
         console.log("Callback Error\n", err)
         res.send({ error_callback: true })
       })
@@ -174,7 +190,7 @@ nextApp.prepare().then(() => {
 
 //This refreshes the user token
   app.post('/refresh', (req, res) => {
-	axios({
+    axios({
       method: 'post',
       url: 'https://discordapp.com/api/oauth2/token',
       data: qs.stringify({
@@ -193,64 +209,43 @@ nextApp.prepare().then(() => {
         res.send({ access_token: access_token, refresh_token: refresh_token })
       })
       .catch(err => {
+        if (LOG_CHANNEL_ID){
+            client.channels.get(LOG_CHANNEL_ID).send(`${adminRole}, error in /refresh request.`)}
         console.log('Refresh Error\n', err)
         res.send({ error_refresh: true })
       })
   })
 
-//Get a list of user roles.  For each role, it gets it's name, and then sends a list of all roles to FormVault
-  app.get('/userTags/:userid', (req, res) => {
-    if (req.params.userid) {
-      axios({
-        method: 'GET',
-        url: `https://discordapp.com/api/v6/guilds/${SERVER_ID}/members/${
-          req.params.userid
-        }`,
-        headers: {
-          Authorization: 'Bot ' + token
-        }
-      }).then(({ data }) => {
-        let roles = []
-        for (let tag of data.roles) {
-          roles.push(
-            client.guilds.find('id', SERVER_ID).roles.find('id', tag).name
-          )
-        }
-	res.send(roles)
-	if (LOG_CHANNEL_ID){client.channels.get(LOG_CHANNEL_ID).send(`${client.guilds.get(SERVER_ID).members.get(data.user.id).user} is visiting the webpage`)}
-      }).catch(err => 
-	  console.log(err))
-    } else {
-      res.send(req.body)
-    }
-  })
+//Get a list of user tags (As opposed to user roles), and TAGS
   
-  
-//Gets all channels from specific category and put into TAGS
-    app.get('/serverChannels', (req, res) => {
-    axios({
-      method: 'GET',
-      url: `https://discordapp.com/api/v6/guilds/${SERVER_ID}/channels`,
-      headers: {
-        Authorization: 'Bot ' + token
-      }
-    })
-        .then(function(data){
-			TAGS = []
-            for (i in data.data){
-                if (data.data[i]['name'] == CHANNEL_CATEGORY  && data.data[i]['type'] == 4){
-                    for (j in data.data){
-                        if (data.data[i]['id'] == data.data[j]['parent_id']){
-								TAGS.push(data.data[j]['name'].match(/\w[\w-]+/g)[0])
-						}
-                    }
-                }
-            }
-			res.send(TAGS)
-        }).catch(err => console.log(err))
-  })
+  app.get('/userTags/:userid', (req,res) => {
+	  let roles = []
+	  TAGS = []
+	  if (req.params.userid) {
+		server.members.get(req.params.userid).roles.forEach(role => {
+			roles.push(role.name)
+		})
+		server.channels.forEach(channel => {
+			if (channel.type == 'category' && channel.id == CHANNEL_CATEGORY_ID){
+				server.channels.forEach(textChannel => {
+					if (CHANNEL_CATEGORY_ID == textChannel.parentID){
+						TAGS.push(textChannel.name.match(/\w[\w-]+/g)[0])
+					}
+				})
+			}
+		})
+		res.send([roles.filter(i => (TAGS.includes(i))), TAGS])
+		
+		if (LOG_CHANNEL_ID){
+			client.channels.get(LOG_CHANNEL_ID).send(`${server.members.get(req.params.userid).user} is visiting the webpage`)
+		}
+	  }
+	  else{
+		res.send(req.body)
+	  }
+  })           
 
-//This code gets a token from the user, checks to see if the user is new (based on the user having DEFAULT_SERVER_ROLE).  If he does, it calls addMembership(Which changes his roles).  Then calls handleTags.
+//Gets user based on token, and calls handleTags for that user with the given tag
   app.post('/handleTags', (req, res) => {
     if (req.body.token) {
       axios({
@@ -260,12 +255,13 @@ nextApp.prepare().then(() => {
           Authorization: 'Bearer ' + req.body.token
         }
       }).then(({ data }) => {
-        const member = client.guilds
-          .find('id', SERVER_ID)
-          .members.find('id', data.id)
+        const member = server.members.get(data.id)
         handleTags(member, req.body.tag)
-        res.send(member)
-      }).catch(err => console.log(err))
+        res.send('')
+      }).catch(err => {console.log(err)
+      if (LOG_CHANNEL_ID){
+        client.channels.get(LOG_CHANNEL_ID).send(`${adminRole}, error in the /handleTags request.  The stupid error is: ${err}`)
+      }})
     } else {
       res.send(req.body)
     }
@@ -277,6 +273,8 @@ nextApp.prepare().then(() => {
 
   app.listen(3000, err => {
     if (err) throw err
+    process.env.SITE_URL ?
+    console.log(`> Web service ready on ${SITE_URL}`):
     console.log(`> Web service ready on http://localhost:${3000}`)
   })
 })

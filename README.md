@@ -43,6 +43,8 @@ And you'll be running in development mode.
 
 Browse to http://localhost:3000, and check it out.
 
+To change the icon shown on the main webpage (Please don't use our icon), replace serverIcon.png in the static folder with your own icon (Must be png).
+
 Deployment to Now:
 Rename now.example.json to now.json, under 'alias', change it to whatever you would like to deploy your website to.
 Then run:
@@ -53,3 +55,4 @@ And it will automatically upload to Now, and the link to your website will be *I
 
 Add option for Range of players
 Make BOT_POST_CHANNEL_ID optional (Post in the same channel as recieved messages)
+Add client-based error rendering.

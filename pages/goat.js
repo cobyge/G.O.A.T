@@ -76,22 +76,17 @@ export default class Index extends React.Component {
       })}
 	  
   //This compares a list of roles the user currently has, with the available options (From the category), and selects the checkboxes a member has.  Also gets the list of channels to display.
+	  
   getChannels(){
 	var userid = ''
-	axios({
-	method: 'GET',
-	url: `/serverChannels`}).then(function(response){
-	TAGS = []
-	for (i in response.data){
-		TAGS.push(response.data[i])
-	}
-	}).then(getInfo().then(data => {return (data.data.id)}).then(id => 
+	getInfo().then(data => {return (data.data.id)}).then(id => 
 	checkMembership().then(result => {
 		if (result) {
 		  axios({
 			method: 'GET',
 			url: `/userTags/${id}`}).then(({ data }) => {
-				this.setState({ tags: data.filter(i => (TAGS.includes(i)))})
+				TAGS = data[1]
+				this.setState({ tags: data[0]})
 				this.setState({ member: true })
 				this.setState({ loading: false })}).catch(err => console.log(err))
 		}
@@ -99,8 +94,7 @@ export default class Index extends React.Component {
 		  this.setState({ loading: false })
 		}
 	}).catch(err => console.log(err))
-	).catch(err => console.log(err)))
-	.catch(err => console.log(err))
+	).catch(err => console.log(err))
   }
   
   
@@ -141,7 +135,7 @@ export default class Index extends React.Component {
       method: 'POST',
       url: `/handleTags`,
       data: { tag: tag.value, token: getToken() }
-    })
+    }).catch(err => console.log(err))
   }
 	
 	
@@ -242,7 +236,7 @@ export default class Index extends React.Component {
           )) || (
           <div>
             <center>
-              <Image src="/static/coopport.png" size="medium" />
+              <Image src="/static/serverIcon.png" size="medium" />
               <h1>
                 Hello fellow Discord user! <br /> Welcome to the server!
               </h1>
