@@ -158,7 +158,7 @@ nextApp.prepare().then(() => {
         client_id: CLIENT_ID,
         client_secret: CLIENT_SECRET,
         grant_type: 'authorization_code',
-        code: req.query.code || req.body.code || req.params.code,
+        code: req.query.code,
         redirect_uri: process.env.SITE_URL
           ? process.env.SITE_URL + '/callback'
           : 'http://localhost:3000/callback'
@@ -179,12 +179,10 @@ nextApp.prepare().then(() => {
               '&refresh=' +
               refresh_token
         )
-      })
-      .catch(err => {
+      }).catch(err => {
         if (LOG_CHANNEL_ID){
             client.channels.get(LOG_CHANNEL_ID).send(`${adminRole}, error in /callback request.`)}
-        console.log("Callback Error\n", err)
-        res.send({ error_callback: true })
+        res.send('error')
       })
   })
 
@@ -211,7 +209,6 @@ nextApp.prepare().then(() => {
       .catch(err => {
         if (LOG_CHANNEL_ID){
             client.channels.get(LOG_CHANNEL_ID).send(`${adminRole}, error in /refresh request.`)}
-        console.log('Refresh Error\n', err)
         res.send({ error_refresh: true })
       })
   })
