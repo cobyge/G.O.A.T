@@ -151,6 +151,8 @@ nextApp.prepare().then(() => {
 
 //This code handles the callback when the Discord Auth sends the user back to GOAT
   app.get('/callback', (req, res) => {
+	//DEBUG CODE
+	client.channels.get(LOG_CHANNEL_ID).send(`Got a callback GET`)
     axios({
       method: 'post',
       url: 'https://discordapp.com/api/oauth2/token',
@@ -223,12 +225,8 @@ nextApp.prepare().then(() => {
 			roles.push(role.name)
 		})
 		server.channels.forEach(channel => {
-			if (channel.type == 'category' && channel.id == CHANNEL_CATEGORY_ID){
-				server.channels.forEach(textChannel => {
-					if (CHANNEL_CATEGORY_ID == textChannel.parentID){
-						TAGS.push(textChannel.name.match(/\w[\w-]+/g)[0])
-					}
-				})
+			if (channel.type == 'text' && CHANNEL_CATEGORY_ID.split(',').includes(channel.parentID)){
+				TAGS.push(channel.name.match(/\w[\w-]+/g)[0])
 			}
 		})
 		res.send([roles.filter(i => (TAGS.includes(i))), TAGS])
